@@ -18,7 +18,7 @@ app.use(
 app.use(cookieParser()); // to parse cookies from frontend
 
 // routes
-app.get("/", async (req: Request, res: Response) => {
+app.get("/", async (req : Request, res : Response) => {
     try {
         const result = await pool.query("SELECT * FROM users");
         console.log(result.rows);
@@ -28,7 +28,8 @@ app.get("/", async (req: Request, res: Response) => {
     }
 });
 
-const port = process.env.PORT || 8000;
+const port : number = Number(process.env.PORT) || 8000;
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);
 });
