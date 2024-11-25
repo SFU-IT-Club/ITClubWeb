@@ -20,8 +20,10 @@ app.use(cookieParser()); // to parse cookies from frontend
 // routes
 app.get("/", async (req : Request, res : Response) => {
     try {
-        const result = await pool.query("SELECT * FROM users");
+        const client = await pool.connect();
+        const result = await client.query("SELECT * FROM users");
         console.log(result.rows);
+        client.release();
         res.json(result.rows);
     } catch (error) {
         console.error(error);
