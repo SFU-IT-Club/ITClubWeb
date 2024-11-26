@@ -23,11 +23,14 @@ export async function store (req : Request, res : Response)
         if(req.files?.profile) {
             const profile = req.files.profile as UploadedFile;
             fileName = Date.now().toString() + '-' + profile.name;
-            profile.mv(`../../public/${fileName}`);
+            profile.mv(`./public/${fileName}`, (err)=>{
+                console.log(err)
+            });
         }
         const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4)", [name, email, password, fileName]);
         client.release();
-        res.json(result.rows);
+        console.log(result.rows);
+        res.json(result);
     } catch (error) {
         console.error(error);
     }
