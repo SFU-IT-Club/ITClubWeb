@@ -25,7 +25,7 @@ app.use(fileUpload({
 app.use(cookieParser()); // to parse cookies from frontend
 
 // routes
-app.get("/api/users", userRoutes);
+app.use("/api/users/", userRoutes);
 
 const port : number = Number(process.env.PORT) || 8000;
 
