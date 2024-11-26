@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
-import pool from "./db";
+import userRoutes from "./routes/userRoutes";
 require("dotenv/config");
 
 const app = express();
@@ -14,21 +15,17 @@ app.use(
         credentials: true,
     })
 ); // to allow cross origin data
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
+    createParentPath: true
+}));
 
 app.use(cookieParser()); // to parse cookies from frontend
 
 // routes
-app.get("/", async (req : Request, res : Response) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query("SELECT * FROM users");
-        console.log(result.rows);
-        client.release();
-        res.json(result.rows);
-    } catch (error) {
-        console.error(error);
-    }
-});
+app.get("/api/users", userRoutes);
 
 const port : number = Number(process.env.PORT) || 8000;
 
