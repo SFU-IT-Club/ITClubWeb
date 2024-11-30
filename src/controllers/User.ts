@@ -33,7 +33,7 @@ export async function store (req : Request, res : Response)
         const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4)", [name, email, password, fileName]);
         client.release();
         console.log(result.rows);
-        res.json(result);
+        res.json(result.rows);
     } catch (error) {
         console.error(error);
     }
@@ -43,6 +43,19 @@ export async function update (req : Request, res : Response) {
     const id = req.params.id;
 }
 
-
+export async function getById (req: Request, res : Response){
+    try{
+        const client = await pool.connect();
+        const id: number = Number(req.params.id);
+        const result = await client.query("SELECT * FROM users WHERE id = $1", [id] );
+        client.release();
+        console.log(result.rows);
+        res.json(result.rows);
+    }
+    catch (e)
+    {
+        console.error(e);
+    }
+}
 
 
