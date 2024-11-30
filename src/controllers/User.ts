@@ -1,6 +1,8 @@
 import { UploadedFile } from "express-fileupload";
 import  pool from "../db";
 import { Request, Response } from "express";
+import fs from "fs";
+import path from 'path';
 export async function getAllUsers (req : Request, res : Response) 
 {
     try {
@@ -20,10 +22,11 @@ export async function store (req : Request, res : Response)
         const client = await pool.connect();
         const { name, email, password } = req.body;
         let fileName : string | null = null;
+
         if(req.files?.profile) {
             const profile = req.files.profile as UploadedFile;
             fileName = Date.now().toString() + '-' + profile.name;
-            profile.mv(`./public/${fileName}`, (err)=>{
+            profile.mv(path.join(__dirname, '../../public', fileName), (err)=>{
                 console.log(err)
             });
         }
@@ -34,6 +37,10 @@ export async function store (req : Request, res : Response)
     } catch (error) {
         console.error(error);
     }
+}
+
+export async function update (req : Request, res : Response) {
+    const id = req.params.id;
 }
 
 
