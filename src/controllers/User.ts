@@ -1,8 +1,8 @@
 import { UploadedFile } from "express-fileupload";
 import  pool from "../db";
 import { Request, Response } from "express";
-import fs from "fs";
 import path from 'path';
+import IUser from "src/types/IUser";
 export async function getAllUsers (req : Request, res : Response) 
 {
     try {
@@ -20,7 +20,7 @@ export async function store (req : Request, res : Response)
 {
     try {
         const client = await pool.connect();
-        const { name, email, password } = req.body;
+        const { name, email, password } : IUser = req.body;
         let fileName : string | null = null;
 
         if(req.files?.profile) {
@@ -40,7 +40,7 @@ export async function store (req : Request, res : Response)
 }
 
 export async function update (req : Request, res : Response) {
-    const id = req.params.id;
+    const id : number = Number(req.params.id);
 }
 
 export async function getById (req: Request, res : Response){
