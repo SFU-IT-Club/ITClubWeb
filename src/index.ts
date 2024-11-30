@@ -8,7 +8,7 @@ require("dotenv/config");
 const app = express();
 app.use(express.json()); // { "name": "John" } { name : "John" } // to parse json data
 app.use(express.urlencoded({ extended: true })); // to parse url encoded data
-
+console.log('hello world');
 app.use(
     cors({
         origin: "http://localhost:3000", // frontend origin
