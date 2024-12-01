@@ -57,5 +57,19 @@ export async function getById (req: Request, res : Response){
         console.error(e);
     }
 }
+export async function destroy (req : Request, res : Response) {
+    try{
+        const client = await pool.connect();
+        const id : number = Number(req.params.id);
+        const result = await client.query("DELETE FROM users WHERE id = $1", [id]);
+        client.release();
+        console.log(result.rows);
+        res.json(result.rows);
+    }
+    catch(e)
+    {
+        console.error(e);
+    }
+}
 
 
