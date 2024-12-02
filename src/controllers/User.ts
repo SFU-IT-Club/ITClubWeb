@@ -32,7 +32,7 @@ export async function store (req : Request, res : Response)
                 console.log(err)
             });
         }
-        const saltRounds = 1;
+        const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         console.log("Original Password:", password);
         console.log("Hashed Password:", hashedPassword);
@@ -66,13 +66,43 @@ export async function getById (req: Request, res : Response){
         console.error(e);
     }
 }
+
 export async function destroy(req: Request, res: Response) {
     try {
         const client = await pool.connect();
         const id: number = Number(req.params.id);
-        const result = await client.query("DELETE FROM users WHERE id = $1", [id]);
+        
+        const result = await client.query("SELECT profile FROM users WHERE id = $1", [id]);
+        
+        if (result.rows.length === 0) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
 
-        if (result.rowCount === 0) {
+        const profileFileName = result.rows[0].profile;
+        
+        if (profileFileName) {
+            const filePath = path.join(__dirname, '../../public', profileFileName);
+            
+            fs.promises.access(filePath, fs.constants.F_OK)
+                .then(() => {
+                    fs.unlink(filePath, (e) => {
+                        if (e) {
+                            console.error("Error deleting profile image:", e);
+                        } else {
+                            console.log("Profile image deleted successfully");
+                        }
+                    });
+                })
+                .catch(() => {
+                    console.log("Profile image not found, skipping deletion");
+                });
+        }
+
+        // delete the user from the database
+        const deleteResult = await client.query("DELETE FROM users WHERE id = $1", [id]);
+
+        if (deleteResult.rowCount === 0) {
             res.status(404).json({ message: "User not found" });
         } else {
             res.status(200).json({ message: "User deleted successfully" });
