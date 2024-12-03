@@ -8,11 +8,15 @@ import IUser from "src/types/IUser";
 export async function getAllUsers (req : Request, res : Response) 
 {
     try {
+        const search = req.query.search || '';
         const client = await pool.connect();
-        const result = await client.query("SELECT * FROM users");
+        let result;
+        if (search) result = await client.query("SELECT * FROM users WHERE name LIKE $1", [`%${search}%`]);
+        else result = await client.query("SELECT * FROM users");
+
         console.log(result.rows);
         client.release();
-        res.json(result.rows);
+        res.status(200).send(result.rows);
     } catch (error) {
         console.error(error);
     }
@@ -68,15 +72,17 @@ export async function getById (req: Request, res : Response){
 }
 
 export async function destroy(req: Request, res: Response) {
+    const client = await pool.connect();
     try {
-        const client = await pool.connect();
         const id: number = Number(req.params.id);
         
         const result = await client.query("SELECT profile FROM users WHERE id = $1", [id]);
         
         if (result.rows.length === 0) {
-            res.status(404).json({ message: "User not found" });
-            return;
+            const e = new Error();
+            e.name = 'not found';
+            e.message = 'User not found';
+            throw e;
         }
 
         const profileFileName = result.rows[0].profile;
@@ -103,15 +109,20 @@ export async function destroy(req: Request, res: Response) {
         const deleteResult = await client.query("DELETE FROM users WHERE id = $1", [id]);
 
         if (deleteResult.rowCount === 0) {
-            res.status(404).json({ message: "User not found" });
+            const e = new Error();
+            e.name = 'not found';
+            e.message = 'User not found';
+            throw e;
         } else {
             res.status(200).json({ message: "User deleted successfully" });
         }
 
-        client.release();
     } catch (e) {
         console.error(e);
-        res.status(500).json({ message: "An error occurred" });
+        if((e as Error).name == 'not found') res.status(404).json({ message: (e as Error).message });
+        else res.status(500).json({ message: "An error occurred" });
+    } finally {
+        client.release();
     }
 }
 
