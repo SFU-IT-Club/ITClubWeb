@@ -5,14 +5,16 @@ import path from 'path';
 import IUser from "src/types/IUser";
 export async function getAllUsers(req: Request, res: Response) {
     try {
-        const search : string = req.query.search as string || '';
+        const search: string = req.query.search as string || '';
         const client = await pool.connect();
-        const result = await client.query("SELECT * FROM users WHERE name ILIKE $1",["KPO"]);
+        const result = await client.query("SELECT * FROM users WHERE name ILIKE $1", ["SAW"]);
         console.log(result.rows);
         client.release();
+
         if (result.rows.length === 0) {
-            res.json({ message: "Data not found." });
-        } else {
+            const allUsers = await pool.query("SELECT * FROM users");
+            res.json(allUsers.rows);
+        } else {    
             res.json(result.rows);
         }
     } catch (error) {
