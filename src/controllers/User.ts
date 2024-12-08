@@ -63,6 +63,13 @@ export async function update(req: Request, res: Response) {
             return;
         }
 
+        // Verify old password or comparing password
+        const isOldPasswordValid = await bcrypt.compare(oldPassword ?? "", oldUser.password);
+        if (!isOldPasswordValid) {
+            res.status(400).json(errorJson("Old password doesn't match", null));
+            return;
+        }
+
         let newFileName: string | null = oldUser.profile ?? null;
 
         if (req.files?.profile) {
@@ -78,12 +85,6 @@ export async function update(req: Request, res: Response) {
             }
         }
 
-        // Verify old password or comparing password
-        const isOldPasswordValid = await bcrypt.compare(oldPassword ?? "", oldUser.password);
-        if (!isOldPasswordValid) {
-            res.status(400).json(errorJson("Old password doesn't match", null));
-            return;
-        }
 
         // Hash the new password
         const hashedPassword = await hashPassword(password);
