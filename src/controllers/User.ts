@@ -6,6 +6,8 @@ import { Request, Response } from "express";
 import path from "path";
 import IUser from "src/types/IUser";
 import { errorJson, successJson } from "./helper/jsonResponse";
+import jwt from "jsonwebtoken";
+
 export async function getAllUsers(req: Request, res: Response) {
     try {
         const search = req.query.search || "";
@@ -29,9 +31,9 @@ export async function store(req: Request, res: Response) {
         let fileName: string | null = null;
 
         if (req.files?.profile) {
-           
+
             const profile = req.files.profile as UploadedFile;
-             //refactor
+            //refactor
             fileName = Date.now().toString() + "-" + profile.name;
             profile.mv(path.join(__dirname, "../../public", fileName), err => {
                 console.log(err);
@@ -64,9 +66,9 @@ export async function update(req: Request, res: Response) {
         const id: number = Number(req.params.id);
         const { name, email, password }: IUser = req.body;
 
-        const oldUser : IUser = await client.query("SELECT * FROM users WHERE id = $1", [id]).then((result : any) => result.rows[0]);
+        const oldUser: IUser = await client.query("SELECT * FROM users WHERE id = $1", [id]).then((result: any) => result.rows[0]);
         console.log(oldUser);
-       
+
         let newFileName: string | null | undefined = null;
 
         if (req.files?.profile) {
@@ -76,12 +78,12 @@ export async function update(req: Request, res: Response) {
             newFileName = Date.now().toString() + "-" + newProfile.name;
             newProfile.mv(path.join(__dirname, "../../public", newFileName), err => {
                 console.error(err);
-               // throw new Error(err.message);
+                // throw new Error(err.message);
             });
 
 
             // delete old photo
-            if(oldUser.profile)  fs.unlinkSync(path.join(__dirname, "../../public", oldUser.profile));
+            if (oldUser.profile) fs.unlinkSync(path.join(__dirname, "../../public", oldUser.profile));
         }
         else {
             newFileName = oldUser.profile;
@@ -105,7 +107,7 @@ export async function getById(req: Request, res: Response) {
         const result = await client.query("SELECT * FROM users WHERE id = $1", [id]);
         client.release();
         //console.log(result.rows);
-        if(result.rows.length === 0) {
+        if (result.rows.length === 0) {
             res.status(404).json(errorJson("User not found", null));
         }
         else {
@@ -169,3 +171,43 @@ export async function destroy(req: Request, res: Response) {
     }
 }
 
+export async function login(req: Request, res: Response): Promise<void> {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            res.status(400).json(errorJson("Email and password are needed", null));
+            return;
+        }
+
+        const client = await pool.connect();
+        const result = await client.query("SELECT * FROM users WHERE email = $1", [email]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            res.status(404).json(errorJson("Email doesn't match", null));
+            return;
+        }
+
+        const user = result.rows[0];
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            res.status(401).json(errorJson("The password is incorrect", null));
+            return;
+        }
+
+        const token = jwt.sign(
+            { id: user.id, email: user.email },
+            process.env.JWT_SECRET || "default_secret_key",
+            { expiresIn: "1h" }
+        );
+
+        res.status(200).json(
+            successJson("Login successful", { token, user: { id: user.id, name: user.name, email: user.email } })
+        );
+    } catch (error) {
+        console.error("Error in login method:", error);
+        res.status(500).json(errorJson("An error occurred during login", null));
+    }
+}
