@@ -52,7 +52,9 @@ export async function update(req: Request, res: Response) {
     try {
         const client = await pool.connect();
         const id: number = Number(req.params.id);
-        const { name, email, password, oldPassword }: { name: string; email: string; password: string; oldPassword: string } = req.body;
+
+        const userData: IUserWithOldPassword = req.body;
+        const { name, email, password, oldPassword } = userData;
 
         // retrieve old user details
         const oldUser: IUser | null = await client.query("SELECT * FROM users WHERE id = $1", [id]).then((result: any) => result.rows[0]);
@@ -77,7 +79,7 @@ export async function update(req: Request, res: Response) {
         }
 
         // Verify old password or comparing password
-        const isOldPasswordValid = await bcrypt.compare(oldPassword, oldUser.password);
+        const isOldPasswordValid = await bcrypt.compare(oldPassword ?? "", oldUser.password);
         if (!isOldPasswordValid) {
             res.status(400).json(errorJson("Old password doesn't match", null));
             return;
@@ -187,13 +189,26 @@ export async function storeImage(profile: UploadedFile): Promise<string> {
 
         profile.mv(uploadPath, (err) => {
             if (err) {
-                console.error("Error moving file:", err);
-                reject(err);
+                if (err.code === 'EACCES') {
+                    console.error('Permission denied while storing image:', err);
+                    reject(new Error('Permission denied while storing image'));
+                } else if (err.code === 'ENOSPC') {
+                    console.error('No space left on device to store image:', err);
+                    reject(new Error('No space left on device'));
+                } else {
+                    console.error('Error moving file:', err);
+                    reject(new Error('Failed to store image'));
+                }
             } else {
                 resolve(fileName);
             }
         });
     });
 }
+
+interface IUserWithOldPassword extends IUser {
+    oldPassword?: string;
+}
+
 
 
