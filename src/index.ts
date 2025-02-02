@@ -16,10 +16,10 @@ app.use(
     })
 ); // to allow cross origin data
 app.use(fileUpload({
-    // useTempFiles: true,
-    // tempFileDir: "/tmp/",
-    // limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
-    // createParentPath: true
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
+    createParentPath: true
 }));
 
 app.use(cookieParser()); // to parse cookies from frontend

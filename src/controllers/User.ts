@@ -5,6 +5,9 @@ import pool from "../db";
 import { Request, Response } from "express";
 import path from "path";
 import IUser from "src/types/IUser";
+import { errorJson, successJson } from "./helper/jsonResponse";
+import jwt from "jsonwebtoken";
+
 export async function getAllUsers(req: Request, res: Response) {
     try {
         const search = req.query.search || "";
@@ -28,25 +31,24 @@ export async function store(req: Request, res: Response) {
         let fileName: string | null = null;
 
         if (req.files?.profile) {
-            const profile = req.files.profile as UploadedFile;
-            fileName = Date.now().toString() + "-" + profile.name;
-            profile.mv(path.join(__dirname, "../../public", fileName), err => {
-                console.log(err);
-            });
-        }
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        console.log("Original Password:", password);
-        console.log("Hashed Password:", hashedPassword);
 
-        const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4)", [name, email, hashedPassword, fileName]);
+            const profile = req.files.profile as UploadedFile;
+            fileName = await storeImage(profile); // Use store function
+
+        }
+
+        const hashedPassword = await hashPassword(password); //use hash function
+
+        const result = await client.query(
+            "INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, email, hashedPassword, fileName]
+        );
         client.release();
 
-        console.log(result.rows);
-        res.json(result.rows);
+        res.json(successJson("User created successfully", result.rows));
     } catch (e) {
         console.error("Error in store method:", e);
-        res.status(500).json({ message: "An error occurred" });
+        res.status(500).json(errorJson("Error creating user", null));
     }
 }
 
@@ -54,34 +56,71 @@ export async function update(req: Request, res: Response) {
     try {
         const client = await pool.connect();
         const id: number = Number(req.params.id);
-        const { name, email, password }: IUser = req.body;
-
-        const oldUser : IUser = await client.query("SELECT * FROM users WHERE id = $1", [id]).then((result : any) => result.rows[0]);
-
-        let newFileName: string | null = oldUser.profile || null;
-
-        if (req.files?.profile) {
-
-            const newProfile = req.files.profile as UploadedFile;
-            newFileName = Date.now().toString() + "-" + newProfile.name;
-            newProfile.mv(path.join(__dirname, "../../public", newFileName), err => {
-                console.error(err);
-                throw new Error(err.message);
-            });
 
 
-            // delete old photo
-            if(oldUser.profile)  fs.unlinkSync(path.join(__dirname, "../../public", oldUser.profile));
+      
+        let newFileName: string | null | undefined = null;
+
+        const userData: IUserWithOldPassword = req.body;
+        const { name, email, password, oldPassword } = userData;
+
+
+        // retrieve old user details
+        const oldUser: IUser | null = await client.query("SELECT * FROM users WHERE id = $1", [id]).then((result: any) => result.rows[0]);
+        if (!oldUser) {
+            res.status(404).json(errorJson("User not found", null));
+            return;
         }
 
-        // Update the user's data
-        await client.query("UPDATE users SET name = $1, profile = $2, password = $3 WHERE id = $4", [name, newFileName, password, id]);
+
+          const newProfile = req.files.profile as UploadedFile;
+          //refactor
+          newFileName = Date.now().toString() + "-" + newProfile.name;
+          newProfile.mv(path.join(__dirname, "../../public", newFileName), err => {
+              console.error(err);
+              // throw new Error(err.message);
+          });
+
+        // Verify old password or comparing password
+        const isOldPasswordValid = await bcrypt.compare(oldPassword ?? "", oldUser.password);
+        if (!isOldPasswordValid) {
+            res.status(400).json(errorJson("Old password doesn't match", null));
+            return;
+        }
+
+
+        let newFileName: string | null = oldUser.profile ?? null;
+
+           
+
+        if (req.files?.profile) {
+            const newProfile = req.files.profile as UploadedFile;
+            newFileName = await storeImage(newProfile); // Use store function
+
+            // Delete old image
+            if (oldUser.profile) {
+                const oldImagePath = path.join(__dirname, "../../public", oldUser.profile);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+
+        }
+
+
+        // Hash the new password
+        const hashedPassword = await hashPassword(password);
+
+        const result = await client.query(
+            "UPDATE users SET name = $1, email = $2, password = $3, profile = $4 WHERE id = $5 RETURNING *",
+            [name, email, hashedPassword, newFileName, id]
+        );
 
         client.release();
-        res.json({ message: "User updated successfully" });
+        res.json(successJson("User updated successfully", result.rows));
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error updating user" }); // Send appropriate error response
+        // console.error("Error updating user:", error);
+        res.status(500).json(errorJson("Error updating user", null));
     }
 }
 
@@ -91,8 +130,13 @@ export async function getById(req: Request, res: Response) {
         const id: number = Number(req.params.id);
         const result = await client.query("SELECT * FROM users WHERE id = $1", [id]);
         client.release();
-        console.log(result.rows);
-        res.json(result.rows);
+        //console.log(result.rows);
+        if (result.rows.length === 0) {
+            res.status(404).json(errorJson("User not found", null));
+        }
+        else {
+            res.json(result.rows);
+        }
     } catch (e) {
         console.error(e);
     }
@@ -135,20 +179,102 @@ export async function destroy(req: Request, res: Response) {
 
         // delete the user from the database
         const deleteResult = await client.query("DELETE FROM users WHERE id = $1", [id]);
+        console.log(deleteResult);
 
         if (deleteResult.rowCount === 0) {
-            const e = new Error();
-            e.name = "not found";
-            e.message = "User not found";
-            throw e;
+            res.status(404).json(errorJson("User not found", null));
         } else {
-            res.status(200).json({ message: "User deleted successfully" });
+            res.status(200).json(successJson("User deleted successfully", null));
         }
     } catch (e) {
         console.error(e);
         if ((e as Error).name == "not found") res.status(404).json({ message: (e as Error).message });
-        else res.status(500).json({ message: "An error occurred" });
+        else res.status(500).json(errorJson("Error Occurred", null));
     } finally {
         client.release();
     }
 }
+
+
+export async function login(req: Request, res: Response): Promise<void> {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            res.status(400).json(errorJson("Email and password are needed", null));
+            return;
+        }
+
+        const client = await pool.connect();
+        const result = await client.query("SELECT * FROM users WHERE email = $1", [email]);
+        client.release();
+
+        if (result.rows.length === 0) {
+            res.status(404).json(errorJson("Email doesn't match", null));
+            return;
+        }
+
+        const user = result.rows[0];
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            res.status(401).json(errorJson("The password is incorrect", null));
+            return;
+        }
+
+        const token = jwt.sign(
+            { id: user.id, email: user.email },
+            process.env.JWT_SECRET || "default_secret_key",
+            { expiresIn: "1h" }
+        );
+
+        res.status(200).json(
+            successJson("Login successful", { token, user: { id: user.id, name: user.name, email: user.email } })
+        );
+    } catch (error) {
+        console.error("Error in login method:", error);
+        res.status(500).json(errorJson("An error occurred during login", null));
+    }
+}
+
+
+
+// Hash function
+export async function hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+}
+
+
+// store image
+export async function storeImage(profile: UploadedFile): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const fileName = Date.now().toString() + "-" + profile.name;
+        const uploadPath = path.join(__dirname, "../../public", fileName);
+
+        profile.mv(uploadPath, (err) => {
+            if (err) {
+                if (err.code === 'EACCES') {
+                    console.error('Permission denied while storing image:', err);
+                    reject(new Error('Permission denied while storing image'));
+                } else if (err.code === 'ENOSPC') {
+                    console.error('No space left on device to store image:', err);
+                    reject(new Error('No space left on device'));
+                } else {
+                    console.error('Error moving file:', err);
+                    reject(new Error('Failed to store image'));
+                }
+            } else {
+                resolve(fileName);
+            }
+        });
+    });
+}
+
+interface IUserWithOldPassword extends IUser {
+    oldPassword?: string;
+}
+
+
+
+
