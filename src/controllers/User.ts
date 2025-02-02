@@ -56,57 +56,39 @@ export async function update(req: Request, res: Response) {
     try {
         const client = await pool.connect();
         const id: number = Number(req.params.id);
-
-
-      
-        let newFileName: string | null | undefined = null;
-
         const userData: IUserWithOldPassword = req.body;
         const { name, email, password, oldPassword } = userData;
 
-
-        // retrieve old user details
-        const oldUser: IUser | null = await client.query("SELECT * FROM users WHERE id = $1", [id]).then((result: any) => result.rows[0]);
+        // Retrieve old user details
+        const oldUser: IUser | null = await client.query("SELECT * FROM users WHERE id = $1", [id])
+            .then((result: any) => result.rows[0]);
         if (!oldUser) {
             res.status(404).json(errorJson("User not found", null));
             return;
         }
 
-
-          const newProfile = req.files.profile as UploadedFile;
-          //refactor
-          newFileName = Date.now().toString() + "-" + newProfile.name;
-          newProfile.mv(path.join(__dirname, "../../public", newFileName), err => {
-              console.error(err);
-              // throw new Error(err.message);
-          });
-
-        // Verify old password or comparing password
+        // Verify old password
         const isOldPasswordValid = await bcrypt.compare(oldPassword ?? "", oldUser.password);
         if (!isOldPasswordValid) {
             res.status(400).json(errorJson("Old password doesn't match", null));
             return;
         }
 
-
         let newFileName: string | null = oldUser.profile ?? null;
 
-           
-
+        // Handle profile image update
         if (req.files?.profile) {
             const newProfile = req.files.profile as UploadedFile;
-            newFileName = await storeImage(newProfile); // Use store function
+            newFileName = await storeImage(newProfile);
 
-            // Delete old image
+            // Delete old image if it exists
             if (oldUser.profile) {
                 const oldImagePath = path.join(__dirname, "../../public", oldUser.profile);
                 if (fs.existsSync(oldImagePath)) {
                     fs.unlinkSync(oldImagePath);
                 }
             }
-
         }
-
 
         // Hash the new password
         const hashedPassword = await hashPassword(password);
@@ -119,7 +101,6 @@ export async function update(req: Request, res: Response) {
         client.release();
         res.json(successJson("User updated successfully", result.rows));
     } catch (error) {
-        // console.error("Error updating user:", error);
         res.status(500).json(errorJson("Error updating user", null));
     }
 }
