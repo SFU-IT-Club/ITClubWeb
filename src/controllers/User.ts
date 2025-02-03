@@ -5,7 +5,7 @@ import pool from "../db";
 import { Request, Response } from "express";
 import path from "path";
 import IUser from "src/types/IUser";
-import { errorJson, successJson } from "./helper/jsonResponse";
+import { errorResponse, successResponse } from "./helper/jsonResponse";
 import jwt from "jsonwebtoken";
 
 export async function getAllUsers(req: Request, res: Response) {
@@ -45,11 +45,12 @@ export async function store(req: Request, res: Response) {
         );
         client.release();
 
-        res.json(successJson("User created successfully", result.rows));
-    } catch (e) {
+        res.json(successResponse(res, result.rows, "User created successfully"));
+    } catch (e: unknown) {
         console.error("Error in store method:", e);
-        res.status(500).json(errorJson("Error creating user", null));
+        res.status(500).json(errorResponse(e as Error, 500, "Error creating user", res));
     }
+    
 }
 
 export async function update(req: Request, res: Response) {
