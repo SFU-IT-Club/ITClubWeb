@@ -46,9 +46,9 @@ export async function store(req: Request, res: Response) {
         client.release();
 
         res.json(successResponse(res, result.rows, "User created successfully"));
-    } catch (e: unknown) {
+    } catch (e: Error | any) {
         console.error("Error in store method:", e);
-        res.status(500).json(errorResponse(e as Error, 500, "Error creating user", res));
+        res.json(errorResponse(e, 500, "Error creating user", res));
     }
     
 }
