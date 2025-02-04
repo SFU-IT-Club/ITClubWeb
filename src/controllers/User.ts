@@ -7,6 +7,7 @@ import path from "path";
 import IUser from "src/types/IUser";
 import { errorResponse, successResponse } from "./helper/jsonResponse";
 import jwt from "jsonwebtoken";
+import { error } from "console";
 
 export async function getAllUsers(req: Request, res: Response) {
     try {
@@ -46,9 +47,9 @@ export async function store(req: Request, res: Response) {
         client.release();
 
         res.json(successResponse(res, result.rows, "User created successfully"));
-    } catch (e: Error | any) {
+    } catch (e) {
         console.error("Error in store method:", e);
-        res.json(errorResponse(e, 500, "Error creating user", res));
+        errorResponse(e as Error, 500, "Error creating user", res);
     }
     
 }
@@ -63,16 +64,15 @@ export async function update(req: Request, res: Response) {
         // Retrieve old user details
         const oldUser: IUser | null = await client.query("SELECT * FROM users WHERE id = $1", [id])
             .then((result: any) => result.rows[0]);
+
         if (!oldUser) {
-            res.status(404).json(errorJson("User not found", null));
-            return;
+            return errorResponse(new Error("User not found"), 404, "User not found", res);
         }
 
         // Verify old password
         const isOldPasswordValid = await bcrypt.compare(oldPassword ?? "", oldUser.password);
         if (!isOldPasswordValid) {
-            res.status(400).json(errorJson("Old password doesn't match", null));
-            return;
+            return errorResponse(new Error("Old password is incorrect"), 401, "Old password is incorrect", res);
         }
 
         let newFileName: string | null = oldUser.profile ?? null;
@@ -100,11 +100,12 @@ export async function update(req: Request, res: Response) {
         );
 
         client.release();
-        res.json(successJson("User updated successfully", result.rows));
-    } catch (error) {
-        res.status(500).json(errorJson("Error updating user", null));
+        return successResponse(res, result.rows[0], "User updated successfully");
+    } catch (error: Error | any) {
+        return errorResponse(error, 500, "Error updating user", res);
     }
 }
+
 
 export async function getById(req: Request, res: Response) {
     try {
@@ -114,7 +115,7 @@ export async function getById(req: Request, res: Response) {
         client.release();
         //console.log(result.rows);
         if (result.rows.length === 0) {
-            res.status(404).json(errorJson("User not found", null));
+            errorResponse(new Error("User not found"), 404, "User not found", res);
         }
         else {
             res.json(result.rows);
@@ -164,14 +165,14 @@ export async function destroy(req: Request, res: Response) {
         console.log(deleteResult);
 
         if (deleteResult.rowCount === 0) {
-            res.status(404).json(errorJson("User not found", null));
+            errorResponse(new Error("User not found"), 404, "User not found", res);
         } else {
-            res.status(200).json(successJson("User deleted successfully", null));
+            successResponse(res, [], "User deleted successfully");
         }
     } catch (e) {
         console.error(e);
         if ((e as Error).name == "not found") res.status(404).json({ message: (e as Error).message });
-        else res.status(500).json(errorJson("Error Occurred", null));
+        else errorResponse(e as Error, 500, "Error deleting user", res);
     } finally {
         client.release();
     }
@@ -183,7 +184,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            res.status(400).json(errorJson("Email and password are needed", null));
+            errorResponse(new Error("Email and password are required"), 400, "Email and password are required", res);
             return;
         }
 
@@ -192,7 +193,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         client.release();
 
         if (result.rows.length === 0) {
-            res.status(404).json(errorJson("Email doesn't match", null));
+            errorResponse(new Error("User not found"), 404, "User not found", res);
             return;
         }
 
@@ -200,7 +201,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-            res.status(401).json(errorJson("The password is incorrect", null));
+            errorResponse(new Error("Invalid password"), 401, "Invalid password", res);
             return;
         }
 
@@ -210,12 +211,11 @@ export async function login(req: Request, res: Response): Promise<void> {
             { expiresIn: "1h" }
         );
 
-        res.status(200).json(
-            successJson("Login successful", { token, user: { id: user.id, name: user.name, email: user.email } })
-        );
+        successResponse(res, { token, user: { id: user.id, name: user.name, email: user.email } }, "Login successful");
+
     } catch (error) {
         console.error("Error in login method:", error);
-        res.status(500).json(errorJson("An error occurred during login", null));
+        res.json(errorResponse(error as Error, 500, "Error logging in", res));
     }
 }
 
