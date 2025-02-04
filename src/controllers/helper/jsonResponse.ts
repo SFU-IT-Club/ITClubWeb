@@ -1,17 +1,27 @@
-export const successJson = (message: string | null, data: any) => {
-    return {
-        sueess: true,
-        message: message,
-        data: data
-    }
+import { Response } from "express";
+
+// Success Response Function
+export function successResponse(res: Response, data: any, message: string = "Operation successful", token?: string, pagination?: any) {
+    const responsePayload = {
+        success: true,
+        data,
+        msg: message,
+        token: token || null,
+        pagination: pagination || null,
+    };
+
+    res.status(200).json(responsePayload);
 }
 
-export const errorJson = (message: string | null, data: any) => {
-    return {
-        sueess: false,
-        message: message,
-        data: data
-    }
+// Error Response Function
+export function errorResponse(e: Error, status: number, message: string = e.message, res: Response) {
+    console.error(e);
+
+    const responsePayload = {
+        success: false,
+        error: message,
+        status,
+    };
+
+    res.status(status).json(responsePayload);
 }
-
-

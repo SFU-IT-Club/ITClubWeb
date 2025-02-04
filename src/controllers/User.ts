@@ -5,7 +5,7 @@ import pool from "../db";
 import { Request, Response } from "express";
 import path from "path";
 import IUser from "src/types/IUser";
-import { errorJson, successJson } from "./helper/jsonResponse";
+import { errorResponse, successResponse } from "./helper/jsonResponse";
 import jwt from "jsonwebtoken";
 
 export async function getAllUsers(req: Request, res: Response) {
@@ -18,9 +18,10 @@ export async function getAllUsers(req: Request, res: Response) {
 
         console.log(result.rows);
         client.release();
-        res.status(200).send(result.rows);
+        successResponse(res, result.rows, "fetched users");
     } catch (error) {
         console.error(error);
+        errorResponse(error as Error, 500, "something went wrong!", res);
     }
 }
 
@@ -31,24 +32,18 @@ export async function store(req: Request, res: Response) {
         let fileName: string | null = null;
 
         if (req.files?.profile) {
-
             const profile = req.files.profile as UploadedFile;
             fileName = await storeImage(profile); // Use store function
-
         }
 
         const hashedPassword = await hashPassword(password); //use hash function
 
-        const result = await client.query(
-            "INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *",
-            [name, email, hashedPassword, fileName]
-        );
+        const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *", [name, email, hashedPassword, fileName]);
         client.release();
-
-        res.json(successJson("User created successfully", result.rows));
+        successResponse(res, result.rows, "User created successfully");
     } catch (e) {
         console.error("Error in store method:", e);
-        res.status(500).json(errorJson("Error creating user", null));
+        errorResponse(e as Error, 500, "Error creating user", res);
     }
 }
 
@@ -60,18 +55,16 @@ export async function update(req: Request, res: Response) {
         const { name, email, password, oldPassword } = userData;
 
         // Retrieve old user details
-        const oldUser: IUser | null = await client.query("SELECT * FROM users WHERE id = $1", [id])
-            .then((result: any) => result.rows[0]);
+        const oldUser: IUser | null = await client.query("SELECT * FROM users WHERE id = $1", [id]).then((result: any) => result.rows[0]);
+
         if (!oldUser) {
-            res.status(404).json(errorJson("User not found", null));
-            return;
+            throw new Error ("user not found");
         }
 
         // Verify old password
         const isOldPasswordValid = await bcrypt.compare(oldPassword ?? "", oldUser.password);
         if (!isOldPasswordValid) {
-            res.status(400).json(errorJson("Old password doesn't match", null));
-            return;
+            return errorResponse(new Error("Old password is incorrect"), 401, "Old password is incorrect", res);
         }
 
         let newFileName: string | null = oldUser.profile ?? null;
@@ -93,15 +86,13 @@ export async function update(req: Request, res: Response) {
         // Hash the new password
         const hashedPassword = await hashPassword(password);
 
-        const result = await client.query(
-            "UPDATE users SET name = $1, email = $2, password = $3, profile = $4 WHERE id = $5 RETURNING *",
-            [name, email, hashedPassword, newFileName, id]
-        );
+        const result = await client.query("UPDATE users SET name = $1, email = $2, password = $3, profile = $4 WHERE id = $5 RETURNING *", [name, email, hashedPassword, newFileName, id]);
 
         client.release();
-        res.json(successJson("User updated successfully", result.rows));
+        successResponse(res, result.rows[0], "User updated successfully");
     } catch (error) {
-        res.status(500).json(errorJson("Error updating user", null));
+        console.log(error)
+        errorResponse(error as Error, 500, "Error updating user", res);
     }
 }
 
@@ -113,13 +104,13 @@ export async function getById(req: Request, res: Response) {
         client.release();
         //console.log(result.rows);
         if (result.rows.length === 0) {
-            res.status(404).json(errorJson("User not found", null));
-        }
-        else {
-            res.json(result.rows);
+            throw new Error ("user not found");
+        } else {
+            successResponse(res, result.rows, "user found");
         }
     } catch (e) {
         console.error(e);
+        errorResponse(e as Error, 404, "User not found", res);
     }
 }
 
@@ -163,27 +154,26 @@ export async function destroy(req: Request, res: Response) {
         console.log(deleteResult);
 
         if (deleteResult.rowCount === 0) {
-            res.status(404).json(errorJson("User not found", null));
+            throw new Error("user not found");
+            errorResponse(new Error("User not found"), 404, "User not found", res);
         } else {
-            res.status(200).json(successJson("User deleted successfully", null));
+            successResponse(res, [], "User deleted successfully");
         }
     } catch (e) {
         console.error(e);
-        if ((e as Error).name == "not found") res.status(404).json({ message: (e as Error).message });
-        else res.status(500).json(errorJson("Error Occurred", null));
+        if ((e as Error).name == "not found") errorResponse(e as Error, 404, "user not found", res);
+        else errorResponse(e as Error, 500, "Error deleting user", res);
     } finally {
         client.release();
     }
 }
-
 
 export async function login(req: Request, res: Response): Promise<void> {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            res.status(400).json(errorJson("Email and password are needed", null));
-            return;
+            throw new Error("email and password are required"); 
         }
 
         const client = await pool.connect();
@@ -191,34 +181,24 @@ export async function login(req: Request, res: Response): Promise<void> {
         client.release();
 
         if (result.rows.length === 0) {
-            res.status(404).json(errorJson("Email doesn't match", null));
-            return;
+            throw new Error ("user not found");
         }
 
         const user = result.rows[0];
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-            res.status(401).json(errorJson("The password is incorrect", null));
-            return;
+            throw new Error("invalid password");
         }
 
-        const token = jwt.sign(
-            { id: user.id, email: user.email },
-            process.env.JWT_SECRET || "default_secret_key",
-            { expiresIn: "1h" }
-        );
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || "default_secret_key", { expiresIn: "1h" });
 
-        res.status(200).json(
-            successJson("Login successful", { token, user: { id: user.id, name: user.name, email: user.email } })
-        );
+        successResponse(res, { id: user.id, name: user.name, email: user.email } , "Login successful", token);
     } catch (error) {
         console.error("Error in login method:", error);
-        res.status(500).json(errorJson("An error occurred during login", null));
+        errorResponse(error as Error, 500, (error as Error).message , res);
     }
 }
-
-
 
 // Hash function
 export async function hashPassword(password: string): Promise<string> {
@@ -226,24 +206,23 @@ export async function hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, saltRounds);
 }
 
-
 // store image
 export async function storeImage(profile: UploadedFile): Promise<string> {
     return new Promise((resolve, reject) => {
         const fileName = Date.now().toString() + "-" + profile.name;
         const uploadPath = path.join(__dirname, "../../public", fileName);
 
-        profile.mv(uploadPath, (err) => {
+        profile.mv(uploadPath, err => {
             if (err) {
-                if (err.code === 'EACCES') {
-                    console.error('Permission denied while storing image:', err);
-                    reject(new Error('Permission denied while storing image'));
-                } else if (err.code === 'ENOSPC') {
-                    console.error('No space left on device to store image:', err);
-                    reject(new Error('No space left on device'));
+                if (err.code === "EACCES") {
+                    console.error("Permission denied while storing image:", err);
+                    reject(new Error("Permission denied while storing image"));
+                } else if (err.code === "ENOSPC") {
+                    console.error("No space left on device to store image:", err);
+                    reject(new Error("No space left on device"));
                 } else {
-                    console.error('Error moving file:', err);
-                    reject(new Error('Failed to store image'));
+                    console.error("Error moving file:", err);
+                    reject(new Error("Failed to store image"));
                 }
             } else {
                 resolve(fileName);
@@ -255,7 +234,3 @@ export async function storeImage(profile: UploadedFile): Promise<string> {
 interface IUserWithOldPassword extends IUser {
     oldPassword?: string;
 }
-
-
-
-

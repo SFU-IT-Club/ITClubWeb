@@ -20,6 +20,8 @@
     "@types/jsonwebtoken": "^9.0.7"
   },
   "scripts": {
-    "start": "nodemon src/index.ts"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "npx nodemon"
   }
 }
