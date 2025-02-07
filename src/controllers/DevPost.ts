@@ -47,6 +47,8 @@ export async function updateDevPost(req: Request, res: Response) {
     try {
         const client = await pool.connect();
         const id: number = Number(req.params.id);
+        if(!id) throw new Error("id must be provided, route error");
+
         const { title, repo_link, file_path, contributors } = req.body;
 
         // Retrieve old data from database
@@ -73,7 +75,7 @@ export async function updateDevPost(req: Request, res: Response) {
         successResponse(res, result.rows[0], "Dev post data updated successfully");
     } catch (e) {
         console.log("Error in updateDevPost method:", e);
-        errorResponse(e as Error, 500, "Error updating dev post", res);
+        errorResponse(e as Error, 500, (e as Error).message, res);
     }
 }
 
