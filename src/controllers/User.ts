@@ -5,7 +5,7 @@ import pool from "../db";
 import { Request, Response } from "express";
 import path from "path";
 import IUser from "src/types/IUser";
-import { errorResponse, successResponse } from "./helper/jsonResponse";
+import { errorResponse, successResponse } from "../helper/jsonResponse";
 import jwt from "jsonwebtoken";
 
 export async function getAllUsers(req: Request, res: Response) {
