@@ -9,9 +9,10 @@ export async function createDesignPost(req: Request, res: Response) {
         const contributors = ["aung aung", "kyaw kyaw"];
         const post_id = generate_post_id("design");
         console.log(user_id, figma_link, contributors, post_id);
+
         const insertQuery = `
-        INSERT INTO design_posts (post_id, user_id, figma_link, contributors, is_deleted, created_at)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO design_posts (post_id, user_id, figma_link, contributors, is_deleted)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *;`;
 
         const values = [
@@ -19,9 +20,9 @@ export async function createDesignPost(req: Request, res: Response) {
             user_id,
             figma_link,
             JSON.stringify(contributors),
-            false,
-            new Date().toISOString(),
+            false
         ];
+
         const { rows } = await pool.query(insertQuery, values);
         successResponse(res, rows[0], "Design post created successfully");
 
@@ -29,7 +30,6 @@ export async function createDesignPost(req: Request, res: Response) {
         errorResponse(e as Error, 500, "Failed to create design post", res);
     }
 }
-
 
 export async function getAllPosts(req: Request, res: Response) {
     try {
@@ -49,27 +49,29 @@ export async function deletePost(req: Request, res: Response) {
     try {
         const { post_id } = req.params; // Assuming the post_id is passed in the URL
 
-        const checkQuery = 'SELECT * FROM design_posts WHERE post_id = $1 AND is_deleted = false';
+        // Check if the post exists before deletion
+        const checkQuery = 'SELECT * FROM design_posts WHERE post_id = $1';
         const checkResult = await pool.query(checkQuery, [post_id]);
 
         if (checkResult.rows.length === 0) {
-            throw new Error("Post not found or already deleted");
+            throw new Error("Post not found");
         }
 
-        const updateQuery = `
-            UPDATE design_posts
-            SET is_deleted = true
+        // Permanently delete the post
+        const deleteQuery = `
+            DELETE FROM design_posts
             WHERE post_id = $1
             RETURNING *;
         `;
 
-        const { rows } = await pool.query(updateQuery, [post_id]);
+        const { rows } = await pool.query(deleteQuery, [post_id]);
 
         successResponse(res, rows[0], "Design post deleted successfully");
     } catch (e) {
         errorResponse(e as Error, 500, "Failed to delete design post", res);
-    }
+    } 
 }
+
 export async function updatePost(req: Request, res: Response) {
     try {
         const { post_id } = req.params;
