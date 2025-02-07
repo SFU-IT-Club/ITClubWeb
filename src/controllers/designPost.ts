@@ -107,3 +107,37 @@ export async function updatePost(req: Request, res: Response) {
     }
 }
 
+export async function searchPosts(req: Request, res: Response) {
+    try {
+        const { post_id, figma_link, contributor } = req.query;
+
+        let searchQuery = 'SELECT * FROM design_posts WHERE is_deleted = false';
+        const queryParams: any[] = [];
+
+        if (post_id) {
+            queryParams.push(post_id);
+            searchQuery += ` AND post_id = $${queryParams.length}`;
+        }
+
+        if (figma_link) {
+            queryParams.push(`%${figma_link}%`);
+            searchQuery += ` AND figma_link LIKE $${queryParams.length}`;
+        }
+
+        if (contributor) {
+            queryParams.push(`%${contributor}%`);
+            searchQuery += ` AND contributors::text LIKE $${queryParams.length}`;
+        }
+
+        searchQuery += ' ORDER BY created_at DESC';
+        const { rows } = await pool.query(searchQuery, queryParams);
+
+        if (rows.length === 0) {
+            return successResponse(res, [], "No matching posts found");
+        }
+
+        successResponse(res, rows, "Search results retrieved successfully");
+    } catch (e) {
+        errorResponse(e as Error, 500, "Failed to search posts", res);
+    }
+}
