@@ -3,6 +3,7 @@ import cors from "cors";
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
+import designPostRoutes from "./routes/designPostRoutes";
 import devPostRoutes from "./routes/devPostRoutes";
 require("dotenv/config");
 
@@ -27,7 +28,9 @@ app.use(cookieParser()); // to parse cookies from frontend
 
 // routes
 app.use("/api/users", userRoutes);
+app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
+
 
 const port : number = Number(process.env.PORT) || 8000;
 
