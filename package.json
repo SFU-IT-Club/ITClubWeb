@@ -1,15 +1,19 @@
 {
   "dependencies": {
     "@neondatabase/serverless": "^0.10.3",
+    "@tailwindcss/cli": "^4.0.5",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
+    "express-handlebars": "^8.0.1",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.7",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "tailwindcss": "^4.0.5"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -17,11 +21,13 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-fileupload": "^1.5.1",
+    "@types/express-handlebars": "^5.3.1",
     "@types/jsonwebtoken": "^9.0.7"
   },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "npx nodemon"
+    "dev": "npx nodemon",
+    "tailwind": "npx tailwindcss -i ./src/views/public/styles/input.css -o ./src/views/public/styles/output.css --watch"
   }
 }

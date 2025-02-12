@@ -1,16 +1,34 @@
 import express, { Request, Response } from "express";
+import {engine} from "express-handlebars";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
 import designPostRoutes from "./routes/designPostRoutes";
 import devPostRoutes from "./routes/devPostRoutes";
+import path from 'path';
+import AuthRoute from "./routes/AuthRoute";
 require("dotenv/config");
 
 const app = express();
+
 app.use(express.json()); // { "name": "John" } { name : "John" } // to parse json data
 app.use(express.urlencoded({ extended: true })); // to parse url encoded data
-console.log('hello world');
+
+
+// view engine setup
+app.engine(".hbs", engine(
+    {
+        extname: ".hbs",
+        defaultLayout: false,
+        
+    }
+));
+app.set("view engine", ".hbs");
+app.set("views", path.join(__dirname,"views"));
+
+app.use(express.static(path.join(__dirname, 'views', "public"))); // to serve static files
+
 app.use(
     cors({
         origin: "http://localhost:3000", // frontend origin
@@ -27,9 +45,23 @@ app.use(fileUpload({
 app.use(cookieParser()); // to parse cookies from frontend
 
 // routes
+app.get("/", (req: Request, res: Response) => {
+    res.render('home', {
+        title: 'My Handlebars App'
+    });
+});
+
+app.get("/login", (req: Request, res: Response) => {
+    res.render('login', {
+        title: 'Login Page',
+        error: req.query.errorResponse,
+    });
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
+app.use("/api/auth", AuthRoute);
 
 
 const port : number = Number(process.env.PORT) || 8000;
