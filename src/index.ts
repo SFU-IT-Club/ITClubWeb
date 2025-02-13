@@ -8,6 +8,7 @@ import designPostRoutes from "./routes/designPostRoutes";
 import devPostRoutes from "./routes/devPostRoutes";
 import path from 'path';
 import AuthRoute from "./routes/AuthRoute";
+import GitHubApiRequestHelper from "./ApiRequest/GitHubApiRequest";
 require("dotenv/config");
 
 const app = express();
@@ -62,7 +63,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
 app.use("/api/auth", AuthRoute);
-
+app.use("/api/githubrequest", GitHubApiRequestHelper);
 
 const port : number = Number(process.env.PORT) || 8000;
 
