@@ -28,7 +28,6 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "npx nodemon",
-    "tailwind": "npx tailwindcss -i ./src/views/public/styles/input.css -o ./src/views/public/styles/output.css --watch"
+    "dev": "npx nodemon"
   }
 }

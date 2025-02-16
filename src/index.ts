@@ -59,6 +59,13 @@ app.get("/login", (req: Request, res: Response) => {
     });
 });
 
+app.get("/users", (req: Request, res: Response) => {
+    res.render('users', {
+        title: 'All Users',
+        error: req.query.errorResponse,
+    });
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
