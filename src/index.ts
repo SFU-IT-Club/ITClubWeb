@@ -58,6 +58,12 @@ app.get("/login", (req: Request, res: Response) => {
         error: req.query.errorResponse,
     });
 });
+app.get("/register", (req: Request, res: Response) => {
+    res.render('register', {
+        title: 'Register Page',
+        error: req.query.errorResponse,
+    });
+});
 
 app.get("/users", (req: Request, res: Response) => {
     res.render('users', {
