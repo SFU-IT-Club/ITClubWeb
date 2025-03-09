@@ -72,6 +72,13 @@ app.get("/users", (req: Request, res: Response) => {
     });
 });
 
+app.get("/devlop-form", (req: Request, res: Response) => {
+    res.render('dev-form', {
+        title: 'dev-form',
+        error: req.query.errorResponse,
+    });
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
