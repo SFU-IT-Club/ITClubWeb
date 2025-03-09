@@ -72,6 +72,13 @@ app.get("/users", (req: Request, res: Response) => {
     });
 });
 
+app.get("/design-posts", (req: Request, res: Response) => {
+    res.render('designPost', {
+        title: 'Design Posts Page',
+        error: req.query.errorResponse,
+    });
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
