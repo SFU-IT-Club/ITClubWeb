@@ -3,11 +3,14 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import pool from "../db";
 import { errorResponse, successResponse } from "../helper/jsonResponse";
+import IUser from "src/types/IUser";
+import { UploadedFile } from "express-fileupload";
+import { hashPassword, storeImage } from "./User";
 
 export const renderLogin = (req: Request, res: Response): void => {
-    const message = 'hello';
     res.render("login");
 };
+
 export async function login(req: Request, res: Response): Promise<void> {
     try {
         const { email, password } = req.body;
@@ -38,4 +41,32 @@ export async function login(req: Request, res: Response): Promise<void> {
         console.error("Error in login method:", error);
         errorResponse(error as Error, 500, (error as Error).message, res);
     }
+}
+
+export async function register(req: Request, res: Response) {
+    try {
+        const client = await pool.connect();
+        console.log('register', req.body);
+        const { name, email, password }: IUser = req.body;
+
+        let fileName: string | null = null;
+
+        if (req.files?.profile) {
+            const profile = req.files.profile as UploadedFile;
+            fileName = await storeImage(profile); // Use store function
+        }
+
+        const hashedPassword = await hashPassword(password); //use hash function
+
+        const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *", [name, email, hashedPassword, fileName]);
+        client.release();
+        successResponse(res, result.rows, "User created successfully");
+    } catch (e) {
+        console.error("Error in register:", e);
+        errorResponse(e as Error, 500, "Error creating user", res);
+    }
+}
+
+export async function check_email () {
+    
 }

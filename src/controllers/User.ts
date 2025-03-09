@@ -6,7 +6,6 @@ import { Request, Response } from "express";
 import path from "path";
 import IUser from "src/types/IUser";
 import { errorResponse, successResponse } from "../helper/jsonResponse";
-import jwt from "jsonwebtoken";
 
 export async function getAllUsers(req: Request, res: Response) {
     try {
@@ -25,27 +24,6 @@ export async function getAllUsers(req: Request, res: Response) {
     }
 }
 
-export async function store(req: Request, res: Response) {
-    try {
-        const client = await pool.connect();
-        const { name, email, password }: IUser = req.body;
-        let fileName: string | null = null;
-
-        if (req.files?.profile) {
-            const profile = req.files.profile as UploadedFile;
-            fileName = await storeImage(profile); // Use store function
-        }
-
-        const hashedPassword = await hashPassword(password); //use hash function
-
-        const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *", [name, email, hashedPassword, fileName]);
-        client.release();
-        successResponse(res, result.rows, "User created successfully");
-    } catch (e) {
-        console.error("Error in store method:", e);
-        errorResponse(e as Error, 500, "Error creating user", res);
-    }
-}
 
 export async function update(req: Request, res: Response) {
     try {
@@ -155,7 +133,6 @@ export async function destroy(req: Request, res: Response) {
 
         if (deleteResult.rowCount === 0) {
             throw new Error("user not found");
-            errorResponse(new Error("User not found"), 404, "User not found", res);
         } else {
             successResponse(res, [], "User deleted successfully");
         }

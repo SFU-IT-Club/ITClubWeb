@@ -33,6 +33,16 @@ export async function createDesignPost(req: Request, res: Response) {
 
 export async function getAllPosts(req: Request, res: Response) {
     try {
+        const page : number = 1;
+        const limit : number = 3;
+         const skip = (page - 1) * limit;
+
+        // get total count
+        const total_posts_qry = 'SELECT COUNT(*) FROM design_posts';
+        const total_page : number = Math.ceil(10/3);
+
+        // showing 4-6/10
+
         const query = 'SELECT * FROM design_posts WHERE is_deleted = false ORDER BY created_at DESC';
         const { rows } = await pool.query(query);
 
@@ -45,6 +55,7 @@ export async function getAllPosts(req: Request, res: Response) {
         errorResponse(error as Error, 500, "Failed to retrieve posts", res);
     }
 }
+
 export async function deletePost(req: Request, res: Response) {
     try {
         const { post_id } = req.params; // Assuming the post_id is passed in the URL

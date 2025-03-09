@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import {engine} from "express-handlebars";
+import { engine } from "express-handlebars";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
@@ -22,11 +22,11 @@ app.engine(".hbs", engine(
     {
         extname: ".hbs",
         defaultLayout: false,
-        
+
     }
 ));
 app.set("view engine", ".hbs");
-app.set("views", path.join(__dirname,"views"));
+app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static(path.join(__dirname, 'views', "public"))); // to serve static files
 
@@ -73,15 +73,18 @@ app.get("/users", (req: Request, res: Response) => {
 });
 
 
-app.get("/devlop-form", (req: Request, res: Response) => {
+app.get("/develop-form", (req: Request, res: Response) => {
     res.render('dev-form', {
         title: 'dev-form',
+    })
 });
+
 app.get("/design-posts", (req: Request, res: Response) => {
     res.render('designPost', {
         title: 'Design Posts Page',
 
         error: req.query.errorResponse,
+    });
 });
 
 
@@ -91,7 +94,7 @@ app.use("/api/dev-posts", devPostRoutes);
 app.use("/api/auth", AuthRoute);
 app.use("/api/githubrequest", GitHubApiRequestHelper);
 
-const port : number = Number(process.env.PORT) || 8000;
+const port: number = Number(process.env.PORT) || 8000;
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);
