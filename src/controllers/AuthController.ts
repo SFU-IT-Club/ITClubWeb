@@ -67,6 +67,29 @@ export async function register(req: Request, res: Response) {
     }
 }
 
-export async function check_email () {
-    
+export async function check_email(req: Request, res: Response) {
+    try {
+        const { email } = req.query; 
+
+        if (!email) {
+            return res.status(400).json({ error: "Email is required" });
+        }
+
+        const client = await pool.connect();
+        const result = await client.query(
+            'SELECT COUNT(*) FROM users WHERE email = $1',
+            [email]
+        );
+
+        client.release();
+
+        if (parseInt(result.rows[0].count) > 0) {
+            return res.json({ exists: true });
+        }
+        return res.json({ exists: false });
+
+    } catch (error) {
+        console.error('Error checking email:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 }
