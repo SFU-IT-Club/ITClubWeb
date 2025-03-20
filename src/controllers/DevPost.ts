@@ -132,3 +132,49 @@ export async function destroyDevPost(req: Request, res: Response) {
 
 }
 
+export async function paginationDevPosts(req: Request, res: Response) {
+    try {
+        const page: number = 1; 
+        const limit: number = 3;
+        const skip = (page - 1) * limit;
+
+        const total_posts_qry = 'SELECT COUNT(*) FROM dev_posts WHERE is_deleted = false';
+        const total_result = await pool.query(total_posts_qry);
+        const total_posts: number = parseInt(total_result.rows[0].count);
+        const total_page: number = Math.ceil(total_posts / limit);
+
+        const query = 'SELECT * FROM dev_posts WHERE is_deleted = false ORDER BY created_at LIMIT $1 OFFSET $2';
+        const { rows } = await pool.query(query, [limit, skip]);
+
+        if (rows.length === 0) {
+            
+            return successResponse(res, [], "No posts found");
+        }
+
+        const response = {
+            current_page: page,
+            total_posts,
+            total_page,
+            posts: rows
+        };
+
+        successResponse(res, response, "Posts retrieved successfully");
+    } catch (error) {
+        errorResponse(error as Error, 500, "Failed to retrieve posts", res);
+    }
+}
+
+export async function getAllPosts(req: Request, res: Response) {
+    try {
+        const query = 'SELECT * FROM dev_posts WHERE is_deleted = false ORDER BY created_at';
+        const { rows } = await pool.query(query);
+
+        if (rows.length === 0) {
+            return successResponse(res, [], "No posts found");
+        }
+
+        successResponse(res, rows, "Posts retrieved successfully");
+    } catch (error) {
+        errorResponse(error as Error, 500, "Failed to retrieve posts", res);
+    }
+}
