@@ -133,13 +133,17 @@ export async function destroyDevPost(req: Request, res: Response) {
 }
 
 export async function paginationDevPosts(req: Request, res: Response) {
+    
+    
+
     try {
-        const page: number = 1; 
+        const total_posts_qry = 'SELECT COUNT(*) FROM dev_posts WHERE is_deleted = false';
+        const page: number = 2; 
+        console.log("page:", page);
         const limit: number = 3;
         const skip = (page - 1) * limit;
-
-        const total_posts_qry = 'SELECT COUNT(*) FROM dev_posts WHERE is_deleted = false';
         const total_result = await pool.query(total_posts_qry);
+        
         const total_posts: number = parseInt(total_result.rows[0].count);
         const total_page: number = Math.ceil(total_posts / limit);
 

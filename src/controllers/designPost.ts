@@ -48,7 +48,7 @@ export async function getAllPosts(req: Request, res: Response) {
 
 export async function pagination(req: Request, res: Response) {
     try {
-        const page: number = 2; 
+        const page: number = 1; 
         const limit: number = 3;
         const skip = (page - 1) * limit;
 

@@ -3,13 +3,11 @@ import { storeDevPost, destroyDevPost, updateDevPost, getByDevPostsID, paginatio
 
 const devPostRoutes = express.Router();
 
-
+devPostRoutes.get('/', getAllPosts);
+devPostRoutes.get('/pagination',paginationDevPosts);
 devPostRoutes.post('/store', storeDevPost);
 devPostRoutes.delete('/:id', destroyDevPost);
 devPostRoutes.put('/:id',updateDevPost);
 devPostRoutes.get('/:id', getByDevPostsID);
-devPostRoutes.get('/pagination',paginationDevPosts);
-devPostRoutes.get('/', getAllPosts);
-
 
 export default devPostRoutes;
