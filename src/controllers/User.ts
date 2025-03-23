@@ -5,8 +5,7 @@ import pool from "../db";
 import { Request, Response } from "express";
 import path from "path";
 import IUser from "src/types/IUser";
-import { errorResponse, successResponse } from "./helper/jsonResponse";
-import jwt from "jsonwebtoken";
+import { errorResponse, successResponse } from "../helper/jsonResponse";
 
 export async function getAllUsers(req: Request, res: Response) {
     try {
@@ -25,27 +24,6 @@ export async function getAllUsers(req: Request, res: Response) {
     }
 }
 
-export async function store(req: Request, res: Response) {
-    try {
-        const client = await pool.connect();
-        const { name, email, password }: IUser = req.body;
-        let fileName: string | null = null;
-
-        if (req.files?.profile) {
-            const profile = req.files.profile as UploadedFile;
-            fileName = await storeImage(profile); // Use store function
-        }
-
-        const hashedPassword = await hashPassword(password); //use hash function
-
-        const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *", [name, email, hashedPassword, fileName]);
-        client.release();
-        successResponse(res, result.rows, "User created successfully");
-    } catch (e) {
-        console.error("Error in store method:", e);
-        errorResponse(e as Error, 500, "Error creating user", res);
-    }
-}
 
 export async function update(req: Request, res: Response) {
     try {
@@ -155,7 +133,6 @@ export async function destroy(req: Request, res: Response) {
 
         if (deleteResult.rowCount === 0) {
             throw new Error("user not found");
-            errorResponse(new Error("User not found"), 404, "User not found", res);
         } else {
             successResponse(res, [], "User deleted successfully");
         }
@@ -168,37 +145,6 @@ export async function destroy(req: Request, res: Response) {
     }
 }
 
-export async function login(req: Request, res: Response): Promise<void> {
-    try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            throw new Error("email and password are required"); 
-        }
-
-        const client = await pool.connect();
-        const result = await client.query("SELECT * FROM users WHERE email = $1", [email]);
-        client.release();
-
-        if (result.rows.length === 0) {
-            throw new Error ("user not found");
-        }
-
-        const user = result.rows[0];
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-            throw new Error("invalid password");
-        }
-
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || "default_secret_key", { expiresIn: "1h" });
-
-        successResponse(res, { id: user.id, name: user.name, email: user.email } , "Login successful", token);
-    } catch (error) {
-        console.error("Error in login method:", error);
-        errorResponse(error as Error, 500, (error as Error).message , res);
-    }
-}
 
 // Hash function
 export async function hashPassword(password: string): Promise<string> {

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {{ITClubWeb}}
+    </title>
+    {{!
+    <link rel="stylesheet" href="/public/styles/output.css"> }}
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-gray-200">
+
+    <form class="max-w-sm mx-auto mt-30 p-6 bg-white rounded-lg shadow-xl ">
+        <h3 class="text-2xl font-medium text-center mb-5">Create Design Post</h3>
+        <div class="mb-5">
+            <label for="base-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-dark">
+                Figma Link</label>
+            <input type="url" id="base-input"
+                class="bg-white-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="https://www.figma.com/">
+        </div>
+        
+        <div class="mb-5">
+            <label for="base-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-dark">Contributor</label>
+            <input type="text" id="base-input"
+                class="bg-white-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        </div>
+        <button type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Submit</button>
+    </form>
+</body>
+
+</html>
