@@ -80,7 +80,7 @@ app.get("/develop-form", (req: Request, res: Response) => {
 });
 
 app.get("/design-posts", (req: Request, res: Response) => {
-    res.render('designPost', {
+    res.render('design-post', {
         title: 'Design Posts Page',
 
         error: req.query.errorResponse,
