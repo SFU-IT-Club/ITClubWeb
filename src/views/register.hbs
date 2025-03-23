@@ -111,7 +111,7 @@
             const email_check_response = await fetch(`/api/auth/check-email?email=${email}`);
             const email_check_data = await email_check_response.json();
 
-            if (email_check_data.exists) {
+            if (email_check_data.data.exists) {
                 el_error_message.innerHTML = "This email is already registered.";
                 return;
             }

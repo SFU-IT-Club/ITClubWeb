@@ -72,7 +72,7 @@ export async function check_email(req: Request, res: Response) {
         const { email } = req.query; 
 
         if (!email) {
-            return res.status(400).json({ error: "Email is required" });
+            throw new Error("email is required");
         }
 
         const client = await pool.connect();
@@ -84,12 +84,12 @@ export async function check_email(req: Request, res: Response) {
         client.release();
 
         if (parseInt(result.rows[0].count) > 0) {
-            return res.json({ exists: true });
+            successResponse(res, { exists : true }, "email already exists");
+        } else {
+            successResponse(res, { exists : false }, "email does not exist");
         }
-        return res.json({ exists: false });
-
     } catch (error) {
         console.error('Error checking email:', error);
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(error as Error, 404, "error in check email", res);
     }
 }
