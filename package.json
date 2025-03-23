@@ -26,8 +26,8 @@
     "@types/jsonwebtoken": "^9.0.7"
   },
   "scripts": {
-    "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "npx nodemon"
+    "dev": "npx nodemon", 
+    "build": "tsc && mkdir ./dist/views && cp -r ./src/views ./dist"
   }
 }
