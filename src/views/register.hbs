@@ -9,68 +9,77 @@
     {{!
     <link rel="stylesheet" href="/public/styles/output.css"> }}
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        /* Tailwind CSS-based custom class */
+        input:-webkit-autofill {
+            background-color: transparent !important;
+            color: #000
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 flex flex-col items-center min-h-screen lg:justify-center">
+<body class="bg-gray-200 flex flex-col items-center min-h-screen lg:justify-center">
 
-    <!-- Main Container -->
-    <div
-        class="w-3/4 rounded-xl bg-gray-700 flex flex-col justify-center lg:flex-row-reverse items-center lg:items-center lg:w-1/2 px-6 py-10 shadow-lg">
-
-        <div class="w-3/4 lg:w-1/2 flex justify-center items-center p-6">
-            <img src="/images/logo.png" alt="Logo" class="w-32 h-40 lg:w-52 lg:h-52 object-contain" />
-        </div>
-
-        <div class="w-full max-w-xs px-2 lg:w-1/2 flex flex-col items-start justify-center lg:px-6">
-            <p class="hidden lg:block lg:text-4xl lg:font-bold text-black mb-10">Register</p>
-
-            <form id="register_form" class="w-full max-w-xs justify-center" action="" method="">
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="text" name="name" id="name"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-black peer"
-                        placeholder=" " required />
-                    <label for="name"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Name
-                    </label>
-                </div>
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="email" name="email" id="email"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-black peer"
-                        placeholder=" " required />
-                    <label for="email"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email
-                        address</label>
-                </div>
-
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="password" name="password" id="password"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-black peer"
-                        placeholder=" " required />
-                    <label for="password"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password</label>
-                </div>
-                <div class="relative z-0 w-full mb-5 group">
-                    <input type="password" name="password_confirmation" id="password_confirmation"
-                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-black peer"
-                        placeholder=" " required />
-                    <label for="password_confirmation"
-                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirm
-                        password</label>
-                </div>
-                <div class="text-red-500 font-bold text-sm" id="el_error_message"></div>
-
-                <button type="submit"
-                    class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition hover:text-black">Register
-                </button>
-            </form>
-
-            <div class="w-full flex flex-row justify-center gap-10 mt-10">
-                <img src="/images/github.svg" alt="GitHub" class="w-12 h-12 bg-white p-1 rounded-full" />
-                <img src="/images/google.svg" alt="Google" class="w-12 h-12 bg-white p-1 rounded-full" />
-            </div>
-        </div>
-
+<div class="w-3/4 rounded-xl bg-white flex flex-col justify-center lg:flex-row-reverse items-center lg:items-center lg:w-1/2 px-6 py-10 shadow-lg">
+    <div class="w-3/4 lg:w-1/2 flex justify-center items-center p-6">
+        <img src="/images/logo2.png" alt="Logo" class="w-48 h-64 lg:w-64 lg:h-64 object-contain" />
     </div>
+
+    <div class="w-full max-w-xs px-2 lg:w-1/2 flex flex-col items-start justify-center lg:px-6">
+        <p class="hidden lg:block lg:text-4xl lg:font-bold text-black mb-10">Register</p>
+
+        <form id="register_form" class="w-full max-w-xs justify-center" action="" method="">
+            <div class="relative z-0 w-full mb-5 group">
+                <input type="text" name="name" id="name"
+                    class="block py-2.5 px-0 w-full text-sm text-black bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-dark-500 focus:outline-none focus:ring-0 focus:border-black peer"
+                    placeholder=" " required />
+                <label for="name"
+                    class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-100 peer-focus:-translate-y-6">Name
+                </label>
+            </div>
+
+            <div class="relative z-0 w-full mb-5 group">
+                <input type="email" name="email" id="email"
+                    class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-dark-500 focus:outline-none focus:ring-0 focus:border-black peer"
+                    placeholder=" " required />
+                <label for="email"
+                    class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-100 peer-focus:-translate-y-6">Email
+                    address</label>
+            </div>
+
+            <div class="relative z-0 w-full mb-5 group">
+                <input type="password" name="password" id="password"
+                    class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-dark-500 focus:outline-none focus:ring-0 focus:border-black peer"
+                    placeholder=" " required />
+                <label for="password"
+                    class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-100 peer-focus:-translate-y-6">
+                    Password</label>
+            </div>
+
+            <div class="relative z-0 w-full mb-5 group">
+                <input type="password" name="password_confirmation" id="password_confirmation"
+                    class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-dark-500 focus:outline-none focus:ring-0 focus:border-black peer"
+                    placeholder=" " required />
+                <label for="password_confirmation"
+                    class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-black peer-focus:dark:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-100 peer-focus:-translate-y-6">Confirm
+                    Password</label>
+            </div>
+
+            <div class="text-red-500 font-bold text-sm" id="el_error_message"></div>
+
+            <button type="submit"
+                class="w-full bg-black text-white py-3 rounded-lg font-bold transition hover:bg-red-600 focus:bg-red-600">
+                Register
+            </button>
+
+        </form>
+
+        <div class="w-full flex flex-row justify-center gap-10 mt-10">
+            <img src="/images/github.svg" alt="GitHub" class="w-12 h-12 bg-white p-1 rounded-full shadow-md" />
+            <img src="/images/google.svg" alt="Google" class="w-12 h-12 bg-white p-1 rounded-full shadow-md" />
+        </div>
+    </div>
+</div>
 
 
 </body>
@@ -98,7 +107,15 @@
                 el_error_message.innerHTML = "password and confirm password do not match";
                 return;
             }
-            // check
+
+            const email_check_response = await fetch(`/api/auth/check-email?email=${email}`);
+            const email_check_data = await email_check_response.json();
+
+            if (email_check_data.data.exists) {
+                el_error_message.innerHTML = "This email is already registered.";
+                return;
+            }
+
             const result = await fetch('/api/auth/register', {
                 method: 'POST',
                 body: JSON.stringify({ name, email, password }),

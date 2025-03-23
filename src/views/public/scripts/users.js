@@ -6,7 +6,7 @@ window.onload = async () => {
     users_container.innerHTML = users
         .map(item => {
             return user_card(item);
-        }).join("");
+        }).join(" ");
 };
 
 async function fetch_users() {
