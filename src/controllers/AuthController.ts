@@ -6,6 +6,7 @@ import { errorResponse, successResponse } from "../helper/jsonResponse";
 import IUser from "src/types/IUser";
 import { UploadedFile } from "express-fileupload";
 import { hashPassword, storeImage } from "./User";
+import 'dotenv/config';
 
 export const renderLogin = (req: Request, res: Response): void => {
     res.render("login");
@@ -99,6 +100,23 @@ export async function check_email(req: Request, res: Response) {
     }
 }
 
+export async function getUserProfile(req: Request, res: Response) 
+{
+    try {
+        const client = await pool.connect();
+        const { token } = req.params;
+        
+        const decoded_token = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+        const userId = decoded_token?.id as number;
+        
+        const result = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
+        client.release();
+        successResponse(res, result.rows, "User profile fetched successfully");
+    } catch (error) {
+        console.error("Error in getUserProfile:", error);
+        errorResponse(error as Error, 500, "Error fetching user profile", res);
+    }
+}
 
 function get_token(id : any) {
     if(!process.env.JWT_SECRET && typeof process.env.JWT_SECRET !== 'string') throw new Error("invalid JWT secret key");
