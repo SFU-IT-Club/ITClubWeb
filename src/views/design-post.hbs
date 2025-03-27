@@ -55,6 +55,7 @@
 
     let contributors = [];
     plus_button.addEventListener("click", () => {
+        if (contributor_input.value.trim() === '') return; 
         contributors.push({ id: new Date().getTime(), name: contributor_input.value });
         print_contributors();
         contributor_input.value = '';
