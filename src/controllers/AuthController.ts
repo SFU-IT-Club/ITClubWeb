@@ -11,6 +11,10 @@ export const renderLogin = (req: Request, res: Response): void => {
     res.render("login");
 };
 
+export async function me (req: Request, res: Response) {
+    console.log('token', req.cookies.token);
+};
+
 export async function login(req: Request, res: Response): Promise<void> {
     try {
         const { email, password } = req.body;
@@ -33,8 +37,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         if (!isPasswordValid) {
             throw new Error("invalid password");
         }
-
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || "default_secret_key", { expiresIn: "1h" });
+        const token = set_token(user.id, res);
 
         successResponse(res, { id: user.id, name: user.name, email: user.email }, "Login successful", token);
     } catch (error) {
@@ -42,6 +45,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         errorResponse(error as Error, 500, (error as Error).message, res);
     }
 }
+
 
 export async function register(req: Request, res: Response) {
     try {
@@ -59,6 +63,7 @@ export async function register(req: Request, res: Response) {
         const hashedPassword = await hashPassword(password); //use hash function
 
         const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *", [name, email, hashedPassword, fileName]);
+        console.log('result', result.rows[0].id)
         client.release();
         successResponse(res, result.rows, "User created successfully");
     } catch (e) {
@@ -92,4 +97,18 @@ export async function check_email(req: Request, res: Response) {
         console.error('Error checking email:', error);
         errorResponse(error as Error, 404, "error in check email", res);
     }
+}
+
+
+function get_token(id : any) {
+    if(!process.env.JWT_SECRET && typeof process.env.JWT_SECRET !== 'string') throw new Error("invalid JWT secret key");
+    const token = jwt.sign({ id }, process.env.JWT_SECRET);
+    return token;
+}
+
+function set_token(id : any, res : Response) {
+    const token = get_token(id);
+    const maxAgeForCookie = 3 * 24 * 60 * 60 * 1000; // 3 days in mili-seconds
+    res.cookie('token', token, { httpOnly : true, maxAge : maxAgeForCookie, secure : true, sameSite : 'none' , partitioned : true });
+    return token;
 }

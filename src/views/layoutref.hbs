@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Club - Developer Resources</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-200 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-blue-300 text-white p-4 shadow-md">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <a href="/" class="text-2xl font-bold mb-4 md:mb-0">IT Club</a>
+            <div class="flex flex-wrap justify-center items-center gap-4">
+                <a href="/about" class="hover:text-blue-200">About</a>
+                <a href="/events" class="hover:text-blue-200">Events</a>
+                <a href="/developer-posts" class="font-semibold hover:text-blue-200">Developer Posts</a>
+                <a href="/design-resources" class="hover:text-blue-200">UI/UX Resources</a>
+                <a href="/register" class="bg-black text-white py-2 px-3 rounded-lg font-bold transition hover:bg-red-600 focus:bg-red-900">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+        <!-- Developer Resources Section -->
+        <section class="mb-16">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold">Developer Posts</h2>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700">Backend</button>
+                    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Frontend</button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Backend Post Example -->
+                <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-2">Backend</span>
+                        <h3 class="text-xl font-semibold mb-2">Building REST APIs with Node.js</h3>
+                        <p class="text-gray-600 mb-4">Learn how to create scalable backend services using Express and MongoDB.</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span>By: Dev Team</span>
+                            <span class="mx-2">•</span>
+                            <span>March 15, 2023</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Frontend Post Example -->
+                <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-2">Frontend</span>
+                        <h3 class="text-xl font-semibold mb-2">React Hooks Deep Dive</h3>
+                        <p class="text-gray-600 mb-4">Master React's useState, useEffect, and custom hooks for better component architecture.</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span>By: Frontend Team</span>
+                            <span class="mx-2">•</span>
+                            <span>March 10, 2023</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Fullstack Post Example -->
+                <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium mb-2">Fullstack</span>
+                        <h3 class="text-xl font-semibold mb-2">Authentication Systems</h3>
+                        <p class="text-gray-600 mb-4">Implement JWT authentication across your entire stack from React to Express.</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <span>By: Security Team</span>
+                            <span class="mx-2">•</span>
+                            <span>March 5, 2023</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- UI/UX Design Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-8">UI/UX Design Resources</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Design Post Example -->
+                <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <img src="/images/logo2.png" alt="Design thumbnail" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Figma for Beginners</h3>
+                        <p class="text-gray-600 mb-4">Get started with Figma's interface and create your first wireframes.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">Wireframing</span>
+                            <span class="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">Figma</span>
+                        </div>
+                        <a href="#" class="text-blue-600 hover:underline">Read Tutorial</a>
+                    </div>
+                </article>
+
+                <!-- UX Case Study Example -->
+                <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <img src="/images/logo2.png" alt="Case study thumbnail" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Redesigning the Club Portal</h3>
+                        <p class="text-gray-600 mb-4">See how we improved user engagement by 40% through UX research.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">Case Study</span>
+                            <span class="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">User Research</span>
+                        </div>
+                        <a href="#" class="text-blue-600 hover:underline">View Case Study</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Contribute CTA -->
+        <section class="bg-blue-50 p-8 rounded-lg text-center">
+            <h2 class="text-2xl font-bold mb-4">Want to contribute?</h2>
+            <p class="mb-6 max-w-2xl mx-auto">Share your knowledge with the community! Write developer posts or design resources.</p>
+            <div class="flex justify-center space-x-4">
+                <a href="/submit-post" class="bg-blue-800 text-white font-bold px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">Submit a Post</a>
+                <a href="/register" class="bg-white text-blue-800 font-bold px-6 py-3 rounded-lg border border-blue-800 hover:bg-blue-100 transition duration-300">Join First</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">IT Club</h3>
+                    <p>Empowering students through technology education and collaboration.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 ">
+                        <li><a href="/developer-posts" class="hover:text-blue-300">Developer Resources</a></li>
+                        <li><a href="/design-resources" class="hover:text-blue-300">UI/UX Design</a></li>
+                        <li><a href="/events" class="hover:text-blue-300">Upcoming Events</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:text-blue-300">GitHub</a>
+                        <a href="#" class="hover:text-blue-300">Twitter</a>
+                        <a href="#" class="hover:text-blue-300">Discord</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p>&copy; 2025 IT Club. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

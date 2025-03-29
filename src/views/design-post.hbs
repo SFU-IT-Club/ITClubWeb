@@ -23,13 +23,53 @@
                 class="bg-white-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="https://www.figma.com/">
         </div>
         
+        <div id="contributors_container" class="">
+        </div>
         <div class="mb-5">
             <label for="base-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-dark">Contributor</label>
-            <input type="text" id="base-input"
+            <input type="text" id="contributor-input"
                 class="bg-white-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <div class="bg-red-400 p-4 rounded-sm mt-4 w-fit cursor-pointer" id="plus_button">+</div>
         </div>
         <button type="button" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Submit</button>
     </form>
 </body>
 
 </html>
+<script>
+    const plus_button = document.getElementById("plus_button");
+    const contributor_input = document.getElementById("contributor-input");
+    const contributors_container = document.getElementById("contributors_container");
+
+    let contributors = [];
+    plus_button.addEventListener("click", () => {
+        contributors.push({ id : new Date().getTime(), name : contributor_input.value });
+        print_contributors();
+        contributor_input.value = '';
+    });
+
+    function contributor_card (contributor) {
+        return `
+            <div class="bg-yellow-200 p-3">
+                ${contributor.name}
+                <span onclick="handle_remove_click(${contributor.id})" class="cursor-pointer bg-gray-500 p-2">x</span>
+            </div>
+        `;
+    }
+
+    function print_contributors () {
+        contributors_container.innerHTML = contributors.map(item => contributor_card(item)).join('');
+    }
+
+    function handle_remove_click(id) {
+        remove_contributor(id);
+        print_contributors();
+    }
+
+    function remove_contributor(id) {
+        contributors = contributors.filter(item => item.id !== id);
+    }
+
+
+
+</script>
