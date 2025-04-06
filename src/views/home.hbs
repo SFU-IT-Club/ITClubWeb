@@ -1,1 +1,286 @@
-hello world
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ITClubWeb}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-red': '#E63946',
+                        'dark-red': '#C1121F',
+                        'light-red': '#FF686B',
+                        'rich-black': '#0A0908',
+                        'off-white': '#F8F9FA'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        .hero-pattern {
+            background-color: #0A0908;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E63946' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .cta-glow {
+            box-shadow: 0 0 15px rgba(230, 57, 70, 0.7);
+            transition: all 0.3s ease;
+        }
+        .cta-glow:hover {
+            box-shadow: 0 0 25px rgba(230, 57, 70, 0.9);
+            transform: translateY(-2px);
+        }
+        .feature-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="font-sans bg-off-white text-rich-black">
+    <!-- Hero Section - Full Viewport -->
+    <section class="hero-pattern text-off-white min-h-screen flex items-center relative overflow-hidden">
+        <!-- Animated background elements -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-primary-red mix-blend-screen filter blur-xl animate-pulse"></div>
+            <div class="absolute bottom-1/3 right-1/3 w-40 h-40 rounded-full bg-light-red mix-blend-screen filter blur-xl animate-pulse delay-300"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 py-24 text-center relative z-10">
+            <!-- Club Logo -->
+            <div class="flex justify-center mb-8">
+                <img class="w-40 h-40 lg:w-52 lg:h-52 object-contain" src="/images/logo-colourful.png" alt="Strategy First IT Club Logo">
+            </div>
+            
+            <!-- Main Headline -->
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                <span class="block">STRATEGY.</span>
+                <span class="text-primary-red">INNOVATION.</span>
+                <span class="block">TECHNOLOGY.</span>
+            </h1>
+            
+            <!-- Subheading -->
+            <p class="text-xl md:text-2xl mb-10 max-w-2xl mx-auto">
+                The premier tech community at Strategy First International College for developers, designers, and innovators.
+            </p>
+            
+            <!-- Primary CTA - Glowing Red Button -->
+            <div class="space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="/register" class="cta-glow inline-block bg-primary-red hover:bg-dark-red text-off-white font-bold px-8 py-4 rounded-lg text-lg transition-all duration-300">
+                    JOIN THE CLUB
+                </a>
+                <a href="#features" class="inline-block border-2 border-primary-red hover:bg-rich-black hover:border-rich-black text-primary-red hover:text-off-white font-semibold px-8 py-4 rounded-lg text-lg transition-all duration-300">
+                    LEARN MORE
+                </a>
+            </div>
+            
+            <!-- Trust Indicators -->
+            <div class="mt-16 grid grid-cols-3 gap-4 md:flex md:justify-center md:gap-8 text-sm">
+                <div class="flex flex-col items-center">
+                    <div class="text-2xl font-bold text-primary-red">50+</div>
+                    <div>Active Members</div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="text-2xl font-bold text-primary-red">30+</div>
+                    <div>Design Posts</div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="text-2xl font-bold text-primary-red">15+</div>
+                    <div>Developer Posts</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-off-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">WHY JOIN OUR TECH COMMUNITY?</h2>
+                <div class="w-24 h-1 bg-primary-red mx-auto mb-4"></div>
+                <p class="text-lg text-gray-600">We empower students with practical tech skills and real-world experience to prepare for the digital future.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card text-center bg-white p-8 rounded-lg shadow-md border-t-4 border-primary-red">
+                    <div class="bg-rich-black text-primary-red w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 text-3xl font-bold">1</div>
+                    <h3 class="text-xl font-bold mb-3">STUDENT-LED TECH LABS</h3>
+                    <p class="text-gray-600">Learn from peer mentors who've mastered these skills, with support from faculty and industry advisors.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card text-center bg-white p-8 rounded-lg shadow-md border-t-4 border-primary-red">
+                    <div class="bg-rich-black text-primary-red w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 text-3xl font-bold">2</div>
+                    <h3 class="text-xl font-bold mb-3">TEAM-BASED CODING LABS</h3>
+                    <p class="text-gray-600">Learn through collaborative coding sessions where you'll build solutions in teams, just like professional development environments.</p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card text-center bg-white p-8 rounded-lg shadow-md border-t-4 border-primary-red">
+                    <div class="bg-rich-black text-primary-red w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 text-3xl font-bold">3</div>
+                    <h3 class="text-xl font-bold mb-3">CAREER DEVELOPMENT</h3>
+                    <p class="text-gray-600">Connect with tech companies, alumni networks, and internship opportunities in the industry.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Events Section -->
+    <section class="py-16 bg-rich-black text-off-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-center">UPCOMING EVENTS</h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Event 1 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                    <div class="bg-primary-red p-4 text-center">
+                        <div class="text-xl font-bold">JAN 25</div>
+                        <div class="text-sm">2025</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Web Dev Workshop</h3>
+                        <p class="text-gray-400 mb-4">Learn modern web development with React and Node.js</p>
+                        <a href="#" class="text-primary-red hover:underline font-medium">Learn More →</a>
+                    </div>
+                </div>
+                
+                <!-- Event 2 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                    <div class="bg-primary-red p-4 text-center">
+                        <div class="text-xl font-bold">FEB 8</div>
+                        <div class="text-sm">2025</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">UI/UX Design Sprint</h3>
+                        <p class="text-gray-400 mb-4">Rapid prototyping and user testing techniques</p>
+                        <a href="#" class="text-primary-red hover:underline font-medium">Learn More →</a>
+                    </div>
+                </div>
+                
+                <!-- Event 3 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                    <div class="bg-primary-red p-4 text-center">
+                        <div class="text-xl font-bold">MAR 3</div>
+                        <div class="text-sm">2025</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Hackathon Kickoff</h3>
+                        <p class="text-gray-400 mb-4">48-hour coding competition with prizes</p>
+                        <a href="#" class="text-primary-red hover:underline font-medium">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="/events" class="inline-block border-2 border-primary-red text-primary-red hover:bg-primary-red hover:text-off-white font-bold px-8 py-3 rounded-lg transition-all duration-300">
+                    VIEW ALL EVENTS
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="py-20 bg-off-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-16 text-center">WHAT OUR MEMBERS SAY</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- Demo 1 -->
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                      <img src="/images/sfu.png" class="w-12 h-12 rounded-full bg-gray-300 mr-4">
+                        <div>
+                            <h4 class="font-bold">Kyaw Paing Oo</h4>
+                            <p class="text-gray-600">Final Year Student</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700">"The IT Club gave me practical skills that weren't covered in class. I landed my internship because of the projects I did here."</p>
+                </div>
+                
+               <!-- Demo 2 -->
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <img src="/images/sfu.png" class="w-12 h-12 rounded-full bg-gray-300 mr-4">
+                        <div>
+                            <h4 class="font-bold">Zwe Khant Aung</h4>
+                            <p class="text-gray-600">IT Diploma Student</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700">"Through the club's workshops, I went from beginner to building my own apps. The community support is incredible."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-16 bg-primary-red text-off-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-6">READY TO JOIN OUR TECH COMMUNITY?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Applications for 2025 are now open to all Strategy First students.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/register" class="bg-rich-black hover:bg-gray-900 text-off-white font-bold px-10 py-4 rounded-lg text-lg transition-all duration-300 shadow-lg transform hover:scale-105">
+                    REGISTER NOW
+                </a>
+                <a href="/contact" class="border-2 border-off-white hover:bg-off-white hover:text-rich-black text-off-white font-bold px-10 py-4 rounded-lg text-lg transition-all duration-300">
+                    CONTACT US
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-rich-black text-off-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <img class="w-12 h-12 mr-4" src="/images/logo-colourful.png" alt="IT Club Logo">
+                        <div class="text-xl font-bold">Strategy First IT Club</div>
+                    </div>
+                    <p class="text-gray-400">Empowering the next generation of tech leaders through hands-on learning and innovation.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-primary-red">QUICK LINKS</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-primary-red">About Us</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Events Calendar</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Projects</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-primary-red">CONNECT</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
+                    <p class="text-gray-400">info@strategyfirst.edu.mm</p>
+                    <p class="text-gray-400">09-250717166, 09-250717168</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Strategy First IT Club. All rights reserved.</p>
+                <p class="mt-2">A student organization of Strategy First International College</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
