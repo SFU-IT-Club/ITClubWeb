@@ -6,6 +6,7 @@ import { errorResponse, successResponse } from "../helper/jsonResponse";
 import IUser from "src/types/IUser";
 import { UploadedFile } from "express-fileupload";
 import { hashPassword, storeImage } from "./User";
+import 'dotenv/config';
 
 export const renderLogin = (req: Request, res: Response): void => {
     res.render("login");
@@ -60,12 +61,24 @@ export async function register(req: Request, res: Response) {
             fileName = await storeImage(profile); // Use store function
         }
 
-        const hashedPassword = await hashPassword(password); //use hash function
+        const hashedPassword = await hashPassword(password); // Use hash function
 
-        const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *", [name, email, hashedPassword, fileName]);
-        console.log('result', result.rows[0].id)
+        const result = await client.query(
+            "INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, email, hashedPassword, fileName]
+        );
+
         client.release();
-        successResponse(res, result.rows, "User created successfully");
+        if (result.rows.length === 0) {
+            throw new Error("User registration failed");
+        }
+      
+
+        const user = result.rows[0];
+        const token = set_token(user.id, res);
+       
+    
+        successResponse(res, { id: user.id, name: user.name, email: user.email }, 'User created successfully', token);
     } catch (e) {
         console.error("Error in register:", e);
         errorResponse(e as Error, 500, "Error creating user", res);
@@ -99,6 +112,23 @@ export async function check_email(req: Request, res: Response) {
     }
 }
 
+export async function getUserProfile(req: Request, res: Response) 
+{
+    try {
+        const client = await pool.connect();
+        const { token } = req.params;
+        
+        const decoded_token = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+        const userId = decoded_token?.id as number;
+        
+        const result = await client.query("SELECT * FROM users WHERE id = $1", [userId]);
+        client.release();
+        successResponse(res, result.rows, "User profile fetched successfully");
+    } catch (error) {
+        console.error("Error in getUserProfile:", error);
+        errorResponse(error as Error, 500, "Error fetching user profile", res);
+    }
+}
 
 function get_token(id : any) {
     if(!process.env.JWT_SECRET && typeof process.env.JWT_SECRET !== 'string') throw new Error("invalid JWT secret key");
