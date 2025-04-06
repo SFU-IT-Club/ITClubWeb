@@ -60,12 +60,24 @@ export async function register(req: Request, res: Response) {
             fileName = await storeImage(profile); // Use store function
         }
 
-        const hashedPassword = await hashPassword(password); //use hash function
+        const hashedPassword = await hashPassword(password); // Use hash function
 
-        const result = await client.query("INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *", [name, email, hashedPassword, fileName]);
-        console.log('result', result.rows[0].id)
+        const result = await client.query(
+            "INSERT INTO users (name, email, password, profile) VALUES ($1, $2, $3, $4) RETURNING *",
+            [name, email, hashedPassword, fileName]
+        );
+
         client.release();
-        successResponse(res, result.rows, "User created successfully");
+        if (result.rows.length === 0) {
+            throw new Error("User registration failed");
+        }
+      
+
+        const user = result.rows[0];
+        const token = set_token(user.id, res);
+       
+    
+        successResponse(res, { id: user.id, name: user.name, email: user.email }, 'User created successfully', token);
     } catch (e) {
         console.error("Error in register:", e);
         errorResponse(e as Error, 500, "Error creating user", res);
