@@ -136,14 +136,50 @@
         </div>
     </section>
 
-    <!-- Upcoming Events Section -->
+    <!-- dev posts -->
     <section class="py-16 bg-rich-black text-off-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-center">Developer Posts</h2>
+            
+            <div id="devPostContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="/events" class="inline-block border-2 border-primary-red text-primary-red hover:bg-primary-red hover:text-off-white font-bold px-8 py-3 rounded-lg transition-all duration-300">
+                    VIEW ALL POSTS
+                </a>
+            </div>
+        </div>
+    </section>
+    <hr>
+    <!--  design posts -->
+    <section class="py-16 bg-rich-black text-off-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-center">Designer Posts</h2>
+            
+            <div id="devsignPostContainer" class="grid md:grid-cols-2 lg:grid-col-2 gap-5">
+
+
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="/events" class="inline-block border-2 border-primary-red text-primary-red hover:bg-primary-red hover:text-off-white font-bold px-8 py-3 rounded-lg transition-all duration-300">
+                    VIEW ALL POSTS
+                </a>
+            </div>
+        </div>
+    </section>
+
+ <!-- Upcoming Events Section -->
+    <section class="py-16 bg-rich-white text-off-black">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold mb-12 text-center">UPCOMING EVENTS</h2>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Event 1 -->
-                <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-primary-red p-4 text-center">
                         <div class="text-xl font-bold">JAN 25</div>
                         <div class="text-sm">2025</div>
@@ -156,7 +192,7 @@
                 </div>
                 
                 <!-- Event 2 -->
-                <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-primary-red p-4 text-center">
                         <div class="text-xl font-bold">FEB 8</div>
                         <div class="text-sm">2025</div>
@@ -169,7 +205,7 @@
                 </div>
                 
                 <!-- Event 3 -->
-                <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-primary-red p-4 text-center">
                         <div class="text-xl font-bold">MAR 3</div>
                         <div class="text-sm">2025</div>
@@ -190,10 +226,11 @@
         </div>
     </section>
 
+
     <!-- Reviews -->
-    <section class="py-20 bg-off-white">
+    <section class="py-20 bg-rich-black">
         <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold mb-16 text-center">WHAT OUR MEMBERS SAY</h2>
+            <h2 class="text-3xl text-white font-bold mb-16 text-center">WHAT OUR MEMBERS SAY</h2>
             
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Demo 1 -->
@@ -282,5 +319,134 @@
             </div>
         </div>
     </footer>
+    <script>
+        {{!-- Developer Posts --}}
+   async function fetchDevPosts() {
+    try {
+        const response = await fetch('/api/dev-posts');
+        const data = await response.json();
+        {{!-- console.log(data); --}}
+
+        const devposts = data.data;
+        const devcontainer = document.getElementById('devPostContainer');
+
+        if (!devposts.length) {
+            devcontainer.innerHTML = '<p class="text-gray-500">No events found.</p>';
+            return;
+        }
+
+        devcontainer.innerHTML = devposts.map(devpost => {
+            const dateObj = new Date(devpost.created_at);
+            const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
+            const day = dateObj.getDate();
+            const year = dateObj.getFullYear();
+
+          const contributorBlock = devpost.contributors
+    .map(contributor => 
+    `<span class="bg-gray-700 text-gray-200 text-sm px-2 py-1 rounded-full items-center">
+            ${contributor.name}
+        </span>`).join('');
+
+            return `
+            <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                <div class="bg-primary-red p-4 text-center">
+                    <div class="text-xl font-bold">${month} ${day}</div>
+                    <div class="text-sm">${year}</div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">${devpost.title}</h3>
+                <div class="mb-3 flex flex-wrap gap-2">Contributors: ${contributorBlock}</div>
+
+                    <p class="text-gray-400 mb-4 break-words">${devpost.file_path}</p>
+                   
+                    <a href="${devpost.repo_link}" target="_blank" class="text-primary-red hover:underline font-medium">GitHub → ${devpost.repo_link}</a>
+                </div>
+            </div>`;
+        }).join('');
+        
+    } catch (err) {
+        console.error('Failed to load posts', err);
+    }
+}
+document.addEventListener('DOMContentLoaded', fetchDevPosts);
+
+{{!-- Design Posts --}}
+ async function fetchDesignPosts() {
+    try {
+        const response = await fetch('/api/design-posts');
+        const data = await response.json();
+        console.log(data);
+
+        const designposts = data.data;
+        const designcontainer = document.getElementById('devsignPostContainer');
+
+        if (!designposts.length) {
+            designcontainer.innerHTML = '<p class="text-gray-500">No events found.</p>';
+            return;
+        }
+
+        designcontainer.innerHTML = designposts.map(designpost => {
+            const dateObj = new Date(designpost.created_at);
+            const month = dateObj.toLocaleString('default', { month: 'short' }).toUpperCase();
+            const day = dateObj.getDate();
+            const year = dateObj.getFullYear();
+
+          const contributorBlock = designpost.contributors
+    .map(contributor => 
+    `<span class="bg-gray-700 text-gray-200 text-sm px-2 py-1 rounded-full">
+            ${contributor}
+        </span>`).join('');
+
+            return `
+           <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+  <!-- Date -->
+  <div class="bg-primary-red p-4 text-center">
+    <div class="text-xl font-bold">${month} ${day}</div>
+    <div class="text-sm">${year}</div>
+  </div>
+
+  <!-- Card Body -->
+  <div class="p-6 space-y-4">
+
+    <!-- Contributors -->
+    <div class="mb-3 flex flex-wrap gap-2 items-center text-sm text-gray-400">
+      <span class="mr-2">Contributors:</span> ${contributorBlock}
+    </div>
+
+    <!-- Screen shots -->
+    <div class="relative w-full max-w-2xl mx-auto overflow-hidden rounded-lg shadow-lg aspect-video bg-gray-800" id="carousel">
+      <div class="flex" id="designSlides">
+        <img src="/images/logo-colourful.png" class="w-full h-full object-contain flex-shrink-0" alt="Slide">
+      </div>
+
+      <!-- Controls -->
+      <button id="prevBtn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 z-10">
+        &#10094;
+      </button>
+      <button id="nextBtn" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 z-10">
+        &#10095;
+      </button>
+    </div>
+
+    <!-- Figma Link -->
+    <a href="${designpost.figma_link}" target="_blank" class="text-primary-red hover:underline font-medium block">
+      Figma Link → ${designpost.figma_link}
+    </a>
+  </div>
+</div>
+`;
+        }).join('');
+        
+    } catch (err) {
+        console.error('Failed to load Design posts', err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', fetchDesignPosts);
+
+
+
+</script>
+<img src="" alt="">
 </body>
 </html>
