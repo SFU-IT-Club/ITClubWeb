@@ -15,14 +15,13 @@ import { generate_post_id } from "../helper/general";
 export async function storeDevPost(req: Request, res: Response) {
     try {
         const client = await pool.connect();
-        const { title, user_id, repo_link, file_path, contributors } = req.body;
+        const { title, user_id, repo_link, file_path, contributors, owner } = req.body;
         console.log('body', req.body);
 
         // Generate post_id
         const post_id = generate_post_id("dev");
 
         // Default items
-        const owner_github_username = "aung aung";
         const branch = "master";
         const is_deleted = false;
         const contributors_json = JSON.stringify(contributors);
@@ -32,12 +31,12 @@ export async function storeDevPost(req: Request, res: Response) {
             `INSERT INTO dev_posts ( post_id, owner_github_username, repo_link, file_path, contributors, branch, title, user_id, is_deleted ) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
             RETURNING *`,
-            [ post_id, owner_github_username, repo_link, file_path, contributors_json, branch, title, user_id, is_deleted ]
+            [ post_id, owner, repo_link, file_path, contributors_json, branch, title, user_id, is_deleted ]
         );
 
-        console.log(result);
         client.release();
         successResponse(res, result.rows, "Dev post are created successfully");
+      
     } catch (e) {
         console.error("Error in storeDevPost method:", e);
         errorResponse(e as Error, 500, "Error creating dev post", res);
