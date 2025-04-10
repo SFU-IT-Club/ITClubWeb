@@ -56,13 +56,13 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 
-<body class="hero-pattern text-off-white min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-    <form id="dev_form" class="shadow-xl bg-white text-black p-8 rounded-lg w-96 border-2 border-black">
+<body class="hero-pattern text-off-white min-h-screen flex justify-center p-4 relative overflow-y-auto">
+    <form id="dev_form" class="shadow-xl bg-white text-black p-8 rounded-lg w-96 border-2 border-black my-10">
         <div class="text-center mb-6">
             <h2 class="text-3xl font-bold text-black mb-2">Create Dev Post</h2>
             <div class="h-1 w-20 bg-red-600 mx-auto"></div>
         </div>
-        
+
         <input type="hidden" value="6" name="user_id" />
 
         <div class="mb-5">
@@ -80,7 +80,7 @@
 
         <div class="mb-5">
             <label for="owner" class="block mb-2 text-sm font-medium text-gray-900">Owner</label>
-            <input type="text" id="owner" placeholder="Enter the owner name"
+            <input type="text" id="owner" name="owner" placeholder="Enter the owner name"
                 class="bg-white border-2 border-black text-black text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
         </div>
 
@@ -103,6 +103,7 @@
     </form>
 </body>
 
+
 </html>
 
 <script>
@@ -116,6 +117,7 @@
     const el_repo_error = document.getElementById("repo-error");
     const el_file_path = document.getElementById("file-path");
 
+
     let contributors = [];
 
     dev_form.addEventListener('submit', async (e) => {
@@ -124,10 +126,11 @@
             const title = el_title.value;
             const repo_link = el_repo_link.value;
             const file_path = el_file_path.value;
+            const owner = el_owner.value;
 
             const the_contributors = contributors.map(item => item.name);
 
-            const form_data = { user_id, title, repo_link, file_path, contributors: the_contributors };
+            const form_data = { user_id, title, repo_link, file_path, contributors: the_contributors, owner };
             console.log(form_data)
             const res = await fetch('/api/dev-posts/store', {
                 method: 'POST',
@@ -140,6 +143,10 @@
             console.log('res', res);
             const data = await res.json();
             console.log('data', data);
+
+            // redirect to home page
+            window.location.href = '/';
+            
         } catch (e) {
             console.log(e);
         }
