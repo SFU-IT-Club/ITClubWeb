@@ -15,14 +15,14 @@ import { generate_post_id } from "../helper/general";
 export async function storeDevPost(req: Request, res: Response) {
     try {
         const client = await pool.connect();
-        const { title, user_id, repo_link, file_path } = req.body;
+        const { title, user_id, repo_link, file_path, contributors } = req.body;
+        console.log('body', req.body);
 
         // Generate post_id
         const post_id = generate_post_id("dev");
 
         // Default items
         const owner_github_username = "aung aung";
-        const contributors = ["aung aung", "kyaw kyaw"];
         const branch = "master";
         const is_deleted = false;
         const contributors_json = JSON.stringify(contributors);
@@ -133,8 +133,6 @@ export async function destroyDevPost(req: Request, res: Response) {
 }
 
 export async function paginationDevPosts(req: Request, res: Response) {
-    
-    
 
     try {
         const total_posts_qry = 'SELECT COUNT(*) FROM dev_posts WHERE is_deleted = false';
