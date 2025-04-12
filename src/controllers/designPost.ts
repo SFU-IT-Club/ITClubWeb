@@ -5,10 +5,8 @@ import pool from "../db";
 
 export async function createDesignPost(req: Request, res: Response) {
     try {
-        const { user_id, figma_link } = req.body;
-        const contributors = ["aung aung", "kyaw kyaw"];
+        const { user_id, figma_link, contributors } = req.body;
         const post_id = generate_post_id("design");
-        console.log(user_id, figma_link, contributors, post_id);
 
         const insertQuery = `
         INSERT INTO design_posts (post_id, user_id, figma_link, contributors, is_deleted)
