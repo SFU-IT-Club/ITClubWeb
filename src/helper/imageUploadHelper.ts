@@ -9,7 +9,7 @@ async function bufferToStream(buffer: Buffer): Promise<Readable> {
     return stream;
 }
 
-async function cloudinaryImageUpload (file: Buffer): Promise<string | undefined> {
+async function cloudinaryImageUpload (file: Buffer): Promise<string> {
     try{
         const uploadResult: UploadApiResponse = await new Promise((resolve, reject)=>{
             const uploadStream = cloudinary.uploader.upload_stream({

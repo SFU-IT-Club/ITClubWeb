@@ -1,6 +1,6 @@
 import { chromium, Browser, Page, BrowserContext } from "playwright";
 
-export async function captureGithubCode(github_filepath: string): Promise<Buffer | undefined> {
+export async function captureGithubCode(github_filepath: string): Promise<Buffer> {
     try{
         const browser: Browser = await chromium.launch();
         const context: BrowserContext = await browser.newContext();
