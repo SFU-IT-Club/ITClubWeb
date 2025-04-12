@@ -30,6 +30,7 @@ async function cloudinaryImageUpload (file: Buffer): Promise<string | undefined>
     catch(error)
     {
         console.error("Error uploading image to Cloudinary:", error);
+        throw error;
     }
 }
 

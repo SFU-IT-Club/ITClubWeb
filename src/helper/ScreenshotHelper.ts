@@ -15,5 +15,6 @@ export async function captureGithubCode(github_filepath: string): Promise<Buffer
     }
     catch (error) {
         console.error("Error capturing screenshot:", error);
+        throw error;
     }
 }
