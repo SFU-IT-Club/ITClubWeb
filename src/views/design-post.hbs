@@ -53,7 +53,6 @@
                 class="bg-white border-2 border-black text-black text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" />
         </div>
 
-
         <!-- Contributor Input -->
         <div class="mb-5">
             <label class="block mb-2 text-sm font-medium text-gray-900">Contributors</label>
@@ -73,6 +72,7 @@
                 </button>
             </div>
 
+            
         </div>
 
         <!-- Submit Button -->
@@ -145,10 +145,10 @@
                     d="M5 8a4 4 0 1 1 8 0 4 4 0 0 1-8 0Zm-2 9a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1Zm13-6a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-4Z"
                     clip-rule="evenodd" />
                 </svg>
+            </button>
             </div>
-
-        `;
-    }
+        `).join('');
+        }
 
         window.removeContributor = function (id) {
             const index = contributors.findIndex(c => c.id === id);
