@@ -85,7 +85,7 @@ export async function register(req: Request, res: Response) {
     }
 }
 
-export async function check_email(req: Request, res: Response) {
+export async function checkEmail(req: Request, res: Response) {
     try {
         const { email } = req.query; 
 

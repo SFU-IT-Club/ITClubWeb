@@ -66,7 +66,7 @@
         <input type="hidden" value="6" name="user_id" />
 
         <div class="mb-5">
-            <label for="repo-link" class="block mb-2 text-sm font-medium text-gray-900">Repo Link</label>
+            <label for="repo-link" class="block mb-2 text-sm font-medium text-gray-900">Repository Link</label>
             <input type="url" id="repo-link" placeholder="https://github.com/example/repo"
                 class="bg-white border-2 border-black text-black text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
             <div id="repo-error" class="text-red-600 text-sm mt-1 hidden">Error message</div>
@@ -146,33 +146,26 @@
 
             // redirect to home page
             window.location.href = '/';
-            
+
         } catch (e) {
             console.log(e);
-        }
+        } c
     });
 
 
     const el_error = document.getElementById("repo-error");
     el_repo_link.addEventListener('change', async (e) => {
-        el_error.classList.add('hidden');
-        el_error.innerText = '';
+        clearError(el_error);
 
-        let cleanedUrl = e.target.value.trim();
-        if (!cleanedUrl.startsWith('https://github.com/')) {
-            el_error.innerText = 'This link is not valid. Only GitHub repository links are acceptable.';
-            el_error.classList.remove('hidden');
+        const { isValid, cleanedUrl } = cleanGithubUrl(el_repo_link);
+
+        if (!isValid) {
+            showError(el_error, 'This link is not valid. Only GitHub repository links are acceptable.');
             return;
         }
 
-        // Remove `.git`
-        if (cleanedUrl.endsWith('.git')) {
-            cleanedUrl = cleanedUrl.slice(0, -4);
-            el_repo_link.value = cleanedUrl;
-        }
-
         try {
-            const data = await get_github_info(cleanedUrl);
+            const data = await getGitHubInfo(cleanedUrl);
 
             contributors = data.contributors.map(item => ({
                 id: new Date().getTime(),
@@ -181,22 +174,20 @@
 
             el_title.value = data.name;
             el_owner.value = data.owner;
-            print_contributors();
+            printContributors();
 
         } catch (error) {
             console.error(error);
-            el_error.innerText = 'Invalid link, please try again.';
-            el_error.classList.remove('hidden');
-            el_title.value = '';
-            el_owner.value = '';
+            showError(el_error, 'Invalid link, please try again.');
+            clearInputs(el_title, el_owner);
             contributors = [];
-            print_contributors();
+            printContributors();
         }
     });
 
 
 
-    async function get_github_info(url) {
+    async function getGitHubInfo(url) {
         const res = await fetch('/api/githubrequest/getgithubrepoinfo?repoUrl=' + url);
         console.log(res);
         if (!res.ok) {
@@ -207,13 +198,7 @@
         return data.data;
     }
 
-
-
-
-
-
-
-    function contributor_card(contributor) {
+    function contributorCard(contributor) {
         return `
             <div class="bg-gray-200 rounded-full mb-2 py-2 px-4 flex items-center justify-between w-full">
                 <span class="text-gray-800 font-medium">${contributor.name}</span>
@@ -221,19 +206,48 @@
         `;
     }
 
-    function print_contributors() {
-        contributors_container.innerHTML = contributors.map(item => contributor_card(item)).join('');
+    function printContributors() {
+        contributors_container.innerHTML = contributors.map(item => contributorCard(item)).join('');
+    }
+
+    function clearError(el) {
+        el.innerText = '';
+        el.classList.add('hidden');
+    }
+
+    function showError(el, message) {
+        el.innerText = message;
+        el.classList.remove('hidden');
+    }
+
+    function clearInputs(...elements) {
+    elements.forEach(el => el.value = '');
+}
+
+    function cleanGithubUrl(urlElement) {
+        let url = urlElement.value.trim();
+
+        if (!url.startsWith('https://github.com/')) {
+            return { isValid: false, cleanedUrl: url };
+        }
+
+        if (url.endsWith('.git')) {
+            url = url.slice(0, -4);
+        }
+
+        urlElement.value = url; // update the input field
+        return { isValid: true, cleanedUrl: url };
     }
 
 
 
 
-    function handle_remove_click(id) {
-        remove_contributor(id);
-        print_contributors();
+    function handleRemoveClick(id) {
+        removeContributor(id);
+        printContributors();
     }
 
-    function remove_contributor(id) {
+    function removeContributor(id) {
         contributors = contributors.filter(contributor => contributor.id !== id);
     }
 </script>
