@@ -356,132 +356,146 @@
 </footer>
 <script>
     // dev posts fetch
-    // const dev_posts = fetch
-    // dev_posts render
-        // date
-        // contributors block
-        // whole card
-    async function fetchDevPosts() {
-        try {
-            const response = await fetch('/api/dev-posts');
-            const data = await response.json();
-            {{!-- console.log(data); --}}
+    
+   async function fetchDevPosts() {
+    const devcontainer = document.getElementById('devPostContainer');
 
-            const devposts = data.data;
-            const devcontainer = document.getElementById('devPostContainer');
+    try {
+        const response = await fetch('/api/dev-posts');
+        const { data: devposts } = await response.json();
 
-            if (!devposts.length) {
-                devcontainer.innerHTML = '<p class="text-gray-500">No events found.</p>';
-                return;
-            }
-            console.log('dev posts', devposts);
-            devcontainer.innerHTML = devposts.map(devpost => {
-                const dateObj = new Date(devpost.created_at);
-                const month = dateObj.toLocaleString('default', {month: 'short'}).toUpperCase();
-                const day = dateObj.getDate();
-                const year = dateObj.getFullYear();
+        if (!devposts.length) {
+            devcontainer.innerHTML = '<p class="text-gray-500">No events found.</p>';
+            return;
+        }
+
+        console.log('dev posts', devposts);
+        devcontainer.innerHTML = devposts.map(renderDevPostCard).join('');
+
+    } catch (err) {
+        console.error('Fetch error:', err);
+        devcontainer.innerHTML = '<p class="text-gray-500">There was an error fetching posts.</p>';
+    }
+}
+ // dev_posts render
+function renderDevPostCard(devpost) {
+    const { title, created_at, contributors, file_path, repo_link } = devpost;
+
+    // date
+    const date = new Date(created_at);
+    const month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+      // contributors block
+    const contributorBlock = Array.isArray(contributors)
+        ? contributors.map(item => renderContributorBadge(item)).join('')
+        : renderContributorBadge(contributors);
+
+    return `
+        <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+            <div class="bg-primary-red p-4 text-center">
+                <div class="text-xl font-bold">${month} ${day}</div>
+                <div class="text-sm">${year}</div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold mb-2">${title}</h3>
+                <div class="mb-3 flex flex-wrap gap-2">Contributors: ${contributorBlock}</div>
+                <p class="text-gray-400 mb-4 break-words">${file_path}</p>
+                <a href="${repo_link}" target="_blank" class="text-primary-red hover:underline font-medium">
+                    GitHub → ${repo_link}
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+function renderContributorBadge(name) {
+    return `<span class="bg-gray-700 text-gray-200 text-sm px-2 py-1 rounded-full">${name}</span>`;
+}
+
+// design posts fetch
+       async function fetchDesignPosts() {
+    const designContainer = document.getElementById('devsignPostContainer');
+
+    try {
+        const response = await fetch('/api/design-posts');
+        const { data: designPosts } = await response.json();
+
+        if (!designPosts.length) {
+            designContainer.innerHTML = '<p class="text-gray-500">No events found.</p>';
+            return;
+        }
+
+        console.log('design posts', designPosts);
+        designContainer.innerHTML = designPosts.map(renderDesignPostCard).join('');
+
+    } catch (err) {
+        console.error('Fetch error:', err);
+        designContainer.innerHTML = '<p class="text-gray-500">There was an error fetching posts.</p>';
+    }
+}
+
+// design posts render
+function renderDesignPostCard(post) {
+    const { created_at, contributors, figma_link } = post;
+
+    // date
+    const date = new Date(created_at);
+    const month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+// contributors block
+    const contributorBlock = Array.isArray(contributors)
+        ? contributors.map(renderContributorBadge).join('')
+        : renderContributorBadge(contributors);
 
 
-                const contributor_block =
-                    typeof devpost.contributors === 'object'
-                    ? devpost.contributors.map(item => `<span class="bg-gray-700 text-gray-200 text-sm px-2 py-1 rounded-full">${ item }</span>`).join('')
-                    : `<span class="bg-gray-700 text-gray-200 text-sm px-2 py-1 rounded-full">${ devpost.contributors }</span>`;
 
-                return `
-                    <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
-                        <div class="bg-primary-red p-4 text-center">
-                            <div class="text-xl font-bold">${month} ${day}</div>
-                            <div class="text-sm">${year}</div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold mb-2">${devpost.title}</h3>
-                        <div class="mb-3 flex flex-wrap gap-2">Contributors: ${ contributor_block } </div>
+    return `
+        <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+            <!-- Date -->
+            <div class="bg-primary-red p-4 text-center">
+                <div class="text-xl font-bold">${month} ${day}</div>
+                <div class="text-sm">${year}</div>
+            </div>
 
-                            <p class="text-gray-400 mb-4 break-words">${devpost.file_path}</p>
+            <!-- Card Body -->
+            <div class="p-6 space-y-4">
 
-                            <a href="${devpost.repo_link}" target="_blank" class="text-primary-red hover:underline font-medium">GitHub → ${devpost.repo_link}</a>
-                        </div>
+                <!-- Contributors -->
+                <div class="mb-3 flex flex-wrap gap-2 items-center text-sm text-gray-400">
+                    <span class="mr-2">Contributors:</span> ${contributorBlock}
+                </div>
+
+                <!-- Screenshot Carousel -->
+                <div class="relative w-full max-w-2xl mx-auto overflow-hidden rounded-lg shadow-lg aspect-video bg-gray-800" id="carousel">
+                    <div class="flex" id="designSlides">
+                        <img src="/images/logo-colourful.png" class="w-full h-full object-contain flex-shrink-0" alt="Slide">
                     </div>
-                `;
-            }).join('');
 
-        } catch (err) {
-            console.error('Failed to load posts', err);
-        }
-    }
+                    <!-- Controls -->
+                    <button id="prevBtn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 z-10">
+                        &#10094;
+                    </button>
+                    <button id="nextBtn" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 z-10">
+                        &#10095;
+                    </button>
+                </div>
 
+                <!-- Figma Link -->
+                <a href="${figma_link}" target="_blank" class="text-primary-red hover:underline font-medium block">
+                    Figma Link → ${figma_link}
+                </a>
+            </div>
+        </div>
+    `;
+}
 
-        {{!-- Design Posts --}}
-    async function fetchDesignPosts() {
-        try {
-            const response = await fetch('/api/design-posts');
-            const data = await response.json();
-            console.log(data);
-
-            const designposts = data.data;
-            const designcontainer = document.getElementById('devsignPostContainer');
-
-            if (!designposts.length) {
-                designcontainer.innerHTML = '<p class="text-gray-500">No events found.</p>';
-                return;
-            }
-
-            designcontainer.innerHTML = designposts.map(designpost => {
-                const dateObj = new Date(designpost.created_at);
-                const month = dateObj.toLocaleString('default', {month: 'short'}).toUpperCase();
-                const day = dateObj.getDate();
-                const year = dateObj.getFullYear();
-
-                const contributorBlock = designpost.contributors
-                        .map(contributor =>
-                                `<span class="bg-gray-700 text-gray-200 text-sm px-2 py-1 rounded-full">
-            ${contributor}
-        </span>`).join('');
-
-                return `
-           <div class="bg-gray-900 rounded-lg overflow-hidden shadow-lg">
-  <!-- Date -->
-  <div class="bg-primary-red p-4 text-center">
-    <div class="text-xl font-bold">${month} ${day}</div>
-    <div class="text-sm">${year}</div>
-  </div>
-
-  <!-- Card Body -->
-  <div class="p-6 space-y-4">
-
-    <!-- Contributors -->
-    <div class="mb-3 flex flex-wrap gap-2 items-center text-sm text-gray-400">
-      <span class="mr-2">Contributors:</span> ${contributorBlock}
-    </div>
-
-    <!-- Screen shots -->
-    <div class="relative w-full max-w-2xl mx-auto overflow-hidden rounded-lg shadow-lg aspect-video bg-gray-800" id="carousel">
-      <div class="flex" id="designSlides">
-        <img src="/images/logo-colourful.png" class="w-full h-full object-contain flex-shrink-0" alt="Slide">
-      </div>
-
-      <!-- Controls -->
-      <button id="prevBtn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 z-10">
-        &#10094;
-      </button>
-      <button id="nextBtn" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 z-10">
-        &#10095;
-      </button>
-    </div>
-
-    <!-- Figma Link -->
-    <a href="${designpost.figma_link}" target="_blank" class="text-primary-red hover:underline font-medium block">
-      Figma Link → ${designpost.figma_link}
-    </a>
-  </div>
-</div>
-`;
-            }).join('');
-
-        } catch (err) {
-            console.error('Failed to load Design posts', err);
-        }
-    }
+function renderContributorBadge(name) {
+    return `<span class="bg-gray-700 text-gray-200 text-sm px-2 py-1 rounded-full">${name}</span>`;
+}
 
 
     document.addEventListener('DOMContentLoaded', fetchDevPosts);
@@ -489,6 +503,5 @@
 
 
 </script>
-<img src="" alt="">
 </body>
 </html>
