@@ -73,9 +73,11 @@ app.get("/users", (req: Request, res: Response) => {
 });
 
 
-app.get("/develop-form", (req: Request, res: Response) => {
+app.get("/develop-post", (req: Request, res: Response) => {
     res.render('dev-form', {
         title: 'dev-form',
+
+        error: req.query.errorResponse,
     })
 });
 
@@ -93,6 +95,7 @@ app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
 app.use("/api/auth", AuthRoute);
 app.use("/api/githubrequest", GitHubApiRequestHelper); // /api/githubrequest/getgithubrepoinfo
+
 
 const port: number = Number(process.env.PORT) || 8000;
 

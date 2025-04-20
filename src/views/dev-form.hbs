@@ -7,54 +7,102 @@
     <title>
         {{ITClubWeb}}
     </title>
-    {{!
-    <link rel="stylesheet" href="/public/styles/output.css"> }}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-red': '#E63946',
+                        'dark-red': '#C1121F',
+                        'light-red': '#FF686B',
+                        'rich-black': '#0A0908',
+                        'off-white': '#F8F9FA'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .hero-pattern {
+            background-color: #0A0908;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E63946' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .cta-glow {
+            box-shadow: 0 0 15px rgba(230, 57, 70, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .cta-glow:hover {
+            box-shadow: 0 0 25px rgba(230, 57, 70, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .feature-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+    </style>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 
-<body class="bg-gray-200 flex items-center justify-center min-h-screen">
+<body class="hero-pattern text-off-white min-h-screen flex justify-center p-4 relative overflow-y-auto">
+    <form id="dev_form" class="shadow-xl bg-white text-black p-8 rounded-lg w-96 border-2 border-black my-10">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-bold text-black mb-2">Create Dev Post</h2>
+            <div class="h-1 w-20 bg-red-600 mx-auto"></div>
+        </div>
 
-
-    <form id="dev_form" class="shadow-xl bg-white text-black p-8 rounded-lg w-96">
-        <h2 class="text-2xl font-bold text-center mb-6">Create Dev Post</h2>
         <input type="hidden" value="6" name="user_id" />
 
         <div class="mb-5">
-            <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
-            <input type="text" id="title" placeholder="Enter post title"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <label for="repo-link" class="block mb-2 text-sm font-medium text-gray-900">Repository Link</label>
+            <input type="url" id="repo-link" placeholder="https://github.com/example/repo"
+                class="bg-white border-2 border-black text-black text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
+            <div id="repo-error" class="text-red-600 text-sm mt-1 hidden">Error message</div>
         </div>
 
         <div class="mb-5">
-            <label for="repo-link" class="block mb-2 text-sm font-medium text-gray-900">Repo Link</label>
-            <input type="url" id="repo-link" placeholder="https://github.com/example/repo"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
+            <input type="text" id="title" placeholder="Enter post title" disabled
+                class="bg-white border-2 border-black text-black text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
+        </div>
+
+        <div class="mb-5">
+            <label for="owner" class="block mb-2 text-sm font-medium text-gray-900">Owner</label>
+            <input type="text" id="owner" name="owner" placeholder="Enter the owner name" disabled
+                class="bg-white border-2 border-black text-black text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
         </div>
 
         <div class="mb-5">
             <label for="file-path" class="block mb-2 text-sm font-medium text-gray-900">File Path</label>
             <input type="text" id="file-path" placeholder="/src/components/Form.tsx"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                class="bg-white border-2 border-black text-black text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5">
         </div>
 
-
-        <div class="flex items-center gap-2">
-            <label for="base-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-dark">
-                Contributors
-            </label>
+        <div class="flex items-center gap-2 mb-2">
+            <label class="block text-sm font-medium text-gray-900">Contributors</label>
         </div>
-        <div id="contributors_container">
+        <div id="contributors_container" class="text-gray-500 italic text-sm mb-5">
             contributors will appear when you add the correct link
         </div>
-
         <button type="submit"
-            class="w-full bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition">
+            class="w-full bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition">
             Submit
         </button>
     </form>
-
-
 </body>
+
 
 </html>
 
@@ -64,8 +112,11 @@
     const contributors_container = document.getElementById("contributors_container");
     const dev_form = document.getElementById("dev_form");
     const el_title = document.getElementById("title");
+    const el_owner = document.getElementById("owner");
     const el_repo_link = document.getElementById("repo-link");
+    const el_repo_error = document.getElementById("repo-error");
     const el_file_path = document.getElementById("file-path");
+
 
     let contributors = [];
 
@@ -75,59 +126,79 @@
             const title = el_title.value;
             const repo_link = el_repo_link.value;
             const file_path = el_file_path.value;
+            const owner = el_owner.value;
+
             const the_contributors = contributors.map(item => item.name);
-            
-            const form_data = { user_id, title, repo_link, file_path, contributors : the_contributors };
+
+            const form_data = { user_id, title, repo_link, file_path, contributors: the_contributors, owner };
             console.log(form_data)
             const res = await fetch('/api/dev-posts/store', {
-                method : 'POST', 
-                headers : {
-                    Accept : 'application/json',
-                    'Content-Type' : 'application/json', 
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                body : JSON.stringify(form_data),
+                body: JSON.stringify(form_data),
             });
             console.log('res', res);
             const data = await res.json();
             console.log('data', data);
-        } catch(e) {
+
+            // redirect to home page
+            window.location.href = '/';
+
+        } catch (e) {
             console.log(e);
+        } c
+    });
+
+
+    const el_error = document.getElementById("repo-error");
+    el_repo_link.addEventListener('change', async (e) => {
+        clearError(el_error);
+
+        const { isValid, cleanedUrl } = cleanGithubUrl(el_repo_link);
+
+        if (!isValid) {
+            showError(el_error, 'This link is not valid. Only GitHub repository links are acceptable.');
+            return;
+        }
+
+        try {
+            const data = await getGitHubInfo(cleanedUrl);
+
+            contributors = data.contributors.map(item => ({
+                id: new Date().getTime(),
+                name: item
+            }));
+
+            el_title.value = data.name;
+            el_owner.value = data.owner;
+            printContributors();
+
+        } catch (error) {
+            console.error(error);
+            showError(el_error, 'Invalid link, please try again.');
+            clearInputs(el_title, el_owner);
+            contributors = [];
+            printContributors();
         }
     });
 
 
-    el_repo_link.addEventListener('change',async (e) => {
-        try {
-            console.log('changed');
-            const data = await get_github_info(e.target.value);
-            contributors = data.contributors.map(item => ({ id : new Date().getTime(), name : item }));
-            print_contributors();
-        } catch (e) {
-            console.log(e)
-        }
-    } )
 
-
-
-
-
-    async function get_github_info(url) {
+    async function getGitHubInfo(url) {
         const res = await fetch('/api/githubrequest/getgithubrepoinfo?repoUrl=' + url);
         console.log(res);
+        if (!res.ok) {
+            throw new Error('GitHub repo not found');
+        }
         const data = await res.json();
         console.log(data);
         return data.data;
     }
 
-
-
-
-
-
-
-
-
-    function contributor_card(contributor) {
+    function contributorCard(contributor) {
         return `
             <div class="bg-gray-200 rounded-full mb-2 py-2 px-4 flex items-center justify-between w-full">
                 <span class="text-gray-800 font-medium">${contributor.name}</span>
@@ -135,16 +206,48 @@
         `;
     }
 
-    function print_contributors() {
-        contributors_container.innerHTML = contributors.map(item => contributor_card(item)).join('');
+    function printContributors() {
+        contributors_container.innerHTML = contributors.map(item => contributorCard(item)).join('');
     }
 
-    function handle_remove_click(id) {
-        remove_contributor(id);
-        print_contributors();
+    function clearError(el) {
+        el.innerText = '';
+        el.classList.add('hidden');
     }
 
-    function remove_contributor(id) {
+    function showError(el, message) {
+        el.innerText = message;
+        el.classList.remove('hidden');
+    }
+
+    function clearInputs(...elements) {
+    elements.forEach(el => el.value = '');
+}
+
+    function cleanGithubUrl(urlElement) {
+        let url = urlElement.value.trim();
+
+        if (!url.startsWith('https://github.com/')) {
+            return { isValid: false, cleanedUrl: url };
+        }
+
+        if (url.endsWith('.git')) {
+            url = url.slice(0, -4);
+        }
+
+        urlElement.value = url; // update the input field
+        return { isValid: true, cleanedUrl: url };
+    }
+
+
+
+
+    function handleRemoveClick(id) {
+        removeContributor(id);
+        printContributors();
+    }
+
+    function removeContributor(id) {
         contributors = contributors.filter(contributor => contributor.id !== id);
     }
 </script>
