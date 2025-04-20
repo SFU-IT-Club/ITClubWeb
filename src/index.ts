@@ -90,6 +90,35 @@ app.get("/design-posts", (req: Request, res: Response) => {
 });
 
 
+app.get("/all-design-posts", (req: Request, res: Response) => {
+    res.render('all-design-post', {
+        title: 'Design Posts Page',
+
+        error: req.query.errorResponse,
+    });
+});
+app.get("/all-develop-posts", (req: Request, res: Response) => {
+    res.render('all-develop-post', {
+        title: 'Develop Posts Page',
+
+        error: req.query.errorResponse,
+    });
+});
+app.get("/detail-design-posts", (req: Request, res: Response) => {
+    res.render('detail-design-post', {
+        title: 'Detail design Posts Page',
+
+        error: req.query.errorResponse,
+    });
+});
+app.get("/all-develop-posts", (req: Request, res: Response) => {
+    res.render('all-develop-post', {
+        title: 'Detail develop Posts Page',
+
+        error: req.query.errorResponse,
+    });
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
 app.use("/api/dev-posts", devPostRoutes);
