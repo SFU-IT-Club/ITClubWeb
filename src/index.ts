@@ -73,9 +73,11 @@ app.get("/users", (req: Request, res: Response) => {
 });
 
 
-app.get("/develop-form", (req: Request, res: Response) => {
+app.get("/develop-post", (req: Request, res: Response) => {
     res.render('dev-form', {
         title: 'dev-form',
+
+        error: req.query.errorResponse,
     })
 });
 
