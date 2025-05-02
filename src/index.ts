@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname, 'views', "public"))); // to serve st
 
 app.use(
     cors({
-        origin: "http://localhost:3000", // frontend origin
+        origin: process.env.FRONTEND_ORIGIN, // frontend origin
         credentials: true,
     })
 ); // to allow cross origin data
