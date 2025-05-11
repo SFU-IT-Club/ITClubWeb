@@ -1,0 +1,114 @@
+
+<header class="bg-rich-black text-off-white shadow-md fixed w-full z-50 top-0">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-2">
+            <img src="/images/logo-colourful.png" alt="Logo" class="w-10 h-10 rounded-full">
+            <span class="font-bold text-xl">SFU IT Club</span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <nav class="hidden md:flex items-center space-x-6 relative">
+            <a href="#features" class="hover:text-primary-red transition">Features</a>
+            <a href="#events" class="hover:text-primary-red transition">Events</a>
+
+
+            <!-- Posts Dropdown Toggle -->
+            <div class="relative">
+                <button id="posts-btn" class="flex items-center space-x-1 hover:text-primary-red focus:outline-none">
+                    <span>Posts</span>
+                    <svg class="w-4 h-4 transition-transform duration-200" id="posts-arrow" fill="none"
+                        stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="posts-dropdown"
+                    class="absolute left-0 mt-2 w-40 bg-rich-black rounded-lg shadow-lg hidden flex-col py-2 z-50 transition-all duration-300">
+                    <a href="/design-posts" class="block px-4 py-2 hover:bg-gray-800">Design Posts</a>
+                    <a href="/develop-post" class="block px-4 py-2 hover:bg-gray-800">Develop Posts</a>
+                </div>
+            </div>
+
+            <a href="#reviews" class="hover:text-primary-red transition">Reviews</a>
+
+            <!-- Search Bar -->
+            <div class="relative">
+                <input type="text" placeholder="Search..."
+                    class="bg-gray-800 text-white rounded-full pl-4 pr-10 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-red">
+                <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+            </div>
+
+            <!-- Login -->
+            <a href="/login"
+                class="bg-primary-red hover:bg-dark-red text-white px-4 py-2 rounded-lg font-semibold transition-all">
+                Login
+            </a>
+        </nav>
+
+        <!-- Hamburger Icon -->
+        <div class="md:hidden flex items-center">
+            <button id="menu-btn" class="focus:outline-none text-2xl">☰</button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-rich-black text-off-white px-6 py-4 space-y-4">
+        <a href="#features" class="block">Features</a>
+        <a href="#events" class="block">Events</a>
+
+        <!-- Mobile Posts Dropdown -->
+        <div>
+            <button id="mobile-posts-btn" class="w-full text-left flex justify-between items-center py-2">
+                Posts
+                <svg id="mobile-posts-arrow" class="w-4 h-4 transition-transform duration-200" fill="none"
+                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+            <div id="mobile-posts-dropdown" class="hidden flex-col space-y-2 pl-4 mt-2 transition-all duration-300">
+                <a href="/design-posts" class="block">Design Posts</a>
+                <a href="/develop-post" class="block">Develop Posts</a>
+            </div>
+        </div>
+
+        <a href="#reviews" class="block">Reviews</a>
+        <a href="/login" class="block bg-primary-red text-white text-center py-2 rounded-lg">Login</a>
+        <input type="text" placeholder="Search..."
+            class="w-full bg-gray-800 text-white rounded-full pl-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-red">
+    </div>
+</header>
+
+<!-- Script -->
+<script>
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const postsBtn = document.getElementById('posts-btn');
+    const postsDropdown = document.getElementById('posts-dropdown');
+    const postsArrow = document.getElementById('posts-arrow');
+
+    const mobilePostsBtn = document.getElementById('mobile-posts-btn');
+    const mobilePostsDropdown = document.getElementById('mobile-posts-dropdown');
+    const mobilePostsArrow = document.getElementById('mobile-posts-arrow');
+
+    menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    postsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        postsDropdown.classList.toggle('hidden');
+        postsArrow.classList.toggle('rotate-180');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!postsDropdown.contains(e.target) && !postsBtn.contains(e.target)) {
+            postsDropdown.classList.add('hidden');
+            postsArrow.classList.remove('rotate-180');
+        }
+    });
+
+    mobilePostsBtn.addEventListener('click', () => {
+        mobilePostsDropdown.classList.toggle('hidden');
+        mobilePostsArrow.classList.toggle('rotate-180');
+    });
+</script>

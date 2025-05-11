@@ -8,6 +8,8 @@ import designPostRoutes from "./routes/designPostRoutes";
 import devPostRoutes from "./routes/devPostRoutes";
 import path from 'path';
 import AuthRoute from "./routes/AuthRoute";
+import fs from 'fs';
+import Handlebars from 'handlebars';
 import GitHubApiRequestHelper from "./ApiRequest/GitHubApiRequest";
 require("dotenv/config");
 
@@ -118,6 +120,10 @@ app.get("/all-develop-posts", (req: Request, res: Response) => {
         error: req.query.errorResponse,
     });
 });
+
+const navPath = path.join(__dirname, "views", "navigation.hbs");
+const navContent = fs.readFileSync(navPath, "utf8");
+Handlebars.registerPartial("navigation", navContent);
 
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
