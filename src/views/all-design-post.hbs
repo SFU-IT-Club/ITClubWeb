@@ -1,1 +1,264 @@
-all desigb
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Design Posts | Strategy First IT Club</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-red': '#E63946',
+                        'dark-red': '#C1121F',
+                        'light-red': '#FF686B',
+                        'rich-black': '#0A0908',
+                        'off-white': '#F8F9FA'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .hero-pattern {
+            background-color: #0A0908;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E63946' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .design-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .design-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(230, 57, 70, 0.2);
+        }
+
+        .carousel-slide {
+            transition: transform 0.5s ease;
+        }
+    </style>
+</head>
+
+<body class="font-sans bg-rich-black text-off-white">
+
+    <!-- Hero Section -->
+    <section class="hero-pattern pt-20 pb-16">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Design Posts</h1>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto text-gray-300">
+                Explore UI/UX designs, prototypes, and creative projects from our talented design community.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-12 bg-rich-black">
+        <div class="container mx-auto px-6">
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner" style="display: none;"></div>
+
+            <!-- Design Posts Grid -->
+            <div id="designPostsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Posts will be loaded here dynamically -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-12 flex justify-center">
+                <nav id="paginationContainer" class="inline-flex rounded-md shadow">
+                    <!-- Pagination will be loaded here dynamically -->
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-rich-black text-off-white py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <div class="text-xl font-bold">Strategy First IT Club</div>
+                    </div>
+                    <p class="text-gray-400">Empowering the next generation of tech leaders through hands-on learning
+                        and innovation.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-primary-red">QUICK LINKS</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-primary-red">About Us</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Events Calendar</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Projects</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-primary-red">CONNECT</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
+                            FB
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
+                            GH
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
+                            IG
+                        </a>
+                    </div>
+                    <p class="text-gray-400">info@strategyfirst.edu.mm</p>
+                    <p class="text-gray-400">09-250717166, 09-250717168</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Strategy First IT Club. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentPage = 1;
+        const postsPerPage = 3;
+        let totalPages = 1;
+
+        // DOM Elements
+        const postsContainer = document.getElementById('designPostsContainer');
+        const paginationContainer = document.getElementById('paginationContainer');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Fetch design posts from backend
+        async function fetchDesignPosts(page = 1) {
+            try {
+                loadingSpinner.style.display = 'block';
+                postsContainer.innerHTML = '';
+
+                const response = await fetch(`/designPostRoutes/pagination?page=${page}&limit=${postsPerPage}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Received data:', data); // Add this for debugging
+
+                if (data.success) {
+                    totalPages = data.data.total_page;
+                    currentPage = data.data.current_page;
+
+                    renderPosts(data.data.posts);
+                    renderPagination();
+                } else {
+                    console.error('Error fetching posts:', data.message);
+                    postsContainer.innerHTML = '<p class="text-gray-400 text-center col-span-3">No design posts found.</p>';
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                postsContainer.innerHTML = '<p class="text-primary-red text-center col-span-3">Failed to load design posts. Please try again later.</p>';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // Render posts to the DOM - using your original card design without carousel
+        function renderPosts(posts) {
+            if (posts.length === 0) {
+                postsContainer.innerHTML = '<p class="text-gray-400 text-center col-span-3">No design posts found.</p>';
+                return;
+            }
+
+            postsContainer.innerHTML = posts.map(post => `
+                <div class="design-card bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                    <div class="relative h-64 overflow-hidden">
+                        <div class="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500">
+                            Design Preview
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-bold">${post.title || 'Untitled Design'}</h3>
+                            <span class="bg-gray-700 text-primary-red text-xs px-2 py-1 rounded-full">${post.category || 'Design'}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-gray-800 text-gray-300 text-xs px-2 py-1 rounded-full">${post.author || 'Anonymous'}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4">${post.description || 'No description available'}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">Posted: ${post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Unknown date'}</span>
+                            <a href="${post.figma_link || '#'}" target="_blank" class="text-primary-red hover:underline text-sm font-medium">
+                                View in Figma
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render pagination controls
+        function renderPagination() {
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Previous button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage - 1})" 
+                    class="px-3 py-2 rounded-l-md bg-gray-800 text-off-white hover:bg-gray-700"
+                    ${currentPage === 1 ? 'disabled' : ''}>
+                    Previous
+                </button>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                        class="px-3 py-2 ${currentPage === i ? 'bg-primary-red text-off-white' : 'bg-gray-800 text-off-white hover:bg-gray-700'}">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            // Next button
+            paginationHTML += `
+                <button onclick="changePage(${currentPage + 1})" 
+                    class="px-3 py-2 rounded-r-md bg-gray-800 text-off-white hover:bg-gray-700"
+                    ${currentPage === totalPages ? 'disabled' : ''}>
+                    Next
+                </button>
+            `;
+
+            paginationContainer.innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+
+            currentPage = page;
+            fetchDesignPosts(currentPage);
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchDesignPosts(currentPage);
+        });
+
+        // Make changePage function available globally
+        window.changePage = changePage;
+    </script>
+</body>
+
+</html>
