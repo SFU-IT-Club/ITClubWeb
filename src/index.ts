@@ -111,13 +111,7 @@ app.get("/detail-design-posts", (req: Request, res: Response) => {
         error: req.query.errorResponse,
     });
 });
-app.get("/all-develop-posts", (req: Request, res: Response) => {
-    res.render('all-develop-post', {
-        title: 'Detail develop Posts Page',
 
-        error: req.query.errorResponse,
-    });
-});
 
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
