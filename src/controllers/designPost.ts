@@ -46,8 +46,8 @@ export async function getAllPosts(req: Request, res: Response) {
 
 export async function pagination(req: Request, res: Response) {
     try {
-        const page: number = 1; 
-        const limit: number = 3;
+        const page: number = parseInt(req.query.page as string) || 1; // Get page from query
+        const limit: number = parseInt(req.query.limit as string) || 3; // Get limit from query
         const skip = (page - 1) * limit;
 
         const total_posts_qry = 'SELECT COUNT(*) FROM design_posts WHERE is_deleted = false';
