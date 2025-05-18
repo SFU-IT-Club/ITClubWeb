@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All Development Posts | Strategy First IT Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -33,35 +33,22 @@
         }
 
         .dev-card {
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.3s ease;
         }
 
         .dev-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(230, 57, 70, 0.2);
         }
-
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid #E63946;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 
 <body class="font-sans bg-rich-black text-off-white">
+    <!-- Navigation -->
+    {{> navigation}}
 
     <!-- Hero Section -->
-    <section class="hero-pattern pt-20 pb-16">
+    <section class="hero-pattern pt-20 pb-16 mt-16">
         <div class="container mx-auto px-6 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Development Posts</h1>
             <p class="text-xl md:text-2xl max-w-3xl mx-auto text-gray-300">
@@ -69,26 +56,17 @@
             </p>
         </div>
     </section>
-
-    <!-- Main Content -->
-    <section class="py-12 bg-rich-black">
-        <div class="container mx-auto px-6">
-            <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="loading-spinner" style="display: none;"></div>
-
-            <!-- Dev Posts Grid -->
-            <div id="devPostsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Posts will be loaded here dynamically -->
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-12 flex justify-center">
-                <nav id="paginationContainer" class="inline-flex rounded-md shadow">
-                    <!-- Pagination will be loaded here dynamically -->
-                </nav>
-            </div>
-        </div>
+    <!-- Card container -->
+    <section id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 mb-10 mt-12">
+        <!-- Cards will be inserted here -->
     </section>
+
+    <!-- Pagination buttons with page number -->
+    <div class="flex justify-center items-center gap-4 pb-10">
+        <button id="prev-btn" class="bg-gray-800 px-4 py-2 rounded hover:bg-red-700">Prev</button>
+        <span id="page-info" class="text-gray-400">Page 1</span>
+        <button id="next-btn" class="bg-gray-800 px-4 py-2 rounded hover:bg-red-700">Next</button>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-rich-black text-off-white py-12 border-t border-gray-800">
@@ -114,17 +92,11 @@
                     <h4 class="font-bold mb-4 text-primary-red">CONNECT</h4>
                     <div class="flex space-x-4 mb-4">
                         <a href="#"
-                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
-                            FB
-                        </a>
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">FB</a>
                         <a href="#"
-                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
-                            GH
-                        </a>
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">GH</a>
                         <a href="#"
-                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">
-                            IG
-                        </a>
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">IG</a>
                     </div>
                     <p class="text-gray-400">info@strategyfirst.edu.mm</p>
                     <p class="text-gray-400">09-250717166, 09-250717168</p>
@@ -135,148 +107,68 @@
             </div>
         </div>
     </footer>
-
     <script>
-        // Global variables
         let currentPage = 1;
-        const postsPerPage = 3;
-        let totalPages = 1;
 
-        // DOM Elements
-        const postsContainer = document.getElementById('devPostsContainer');
-        const paginationContainer = document.getElementById('paginationContainer');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-
-        // Fetch dev posts from backend
-        async function fetchDevPosts(page = 1) {
+        async function loadPosts(page) {
             try {
-                loadingSpinner.style.display = 'block';
-                postsContainer.innerHTML = '';
+                const res = await fetch(`/api/dev-posts/pagination?page=${page}`);
+                const response = await res.json();
 
-                const response = await fetch(`/dev-posts/pagination?page=${page}&limit=${postsPerPage}`);
+                const data = response.data;
+                const container = document.getElementById('card-container');
+                container.innerHTML = ''; // Clear old posts
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                data.posts.forEach(post => {
+                    const date = new Date(post.created_at);
+                    const month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+                    const day = date.getDate();
+                    const year = date.getFullYear();
 
-                const data = await response.json();
-                console.log('Received data:', data);
+                    const contributors = Array.isArray(post.contributors)
+                        ? post.contributors.map(name =>
+                            `<span class="bg-gray-700 text-white px-3 py-1 rounded-full text-xs">${name}</span>`
+                        ).join(' ')
+                        : '';
 
-                if (data.success) {
-                    totalPages = data.data.total_page;
-                    currentPage = data.data.current_page;
-
-                    renderPosts(data.data.posts);
-                    renderPagination();
-                } else {
-                    console.error('Error fetching posts:', data.message);
-                    postsContainer.innerHTML = '<p class="text-gray-400 text-center col-span-3">No development posts found.</p>';
-                }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                postsContainer.innerHTML = '<p class="text-primary-red text-center col-span-3">Failed to load development posts. Please try again later.</p>';
-            } finally {
-                loadingSpinner.style.display = 'none';
-            }
-        }
-
-        // Render posts to the DOM
-        function renderPosts(posts) {
-            if (posts.length === 0) {
-                postsContainer.innerHTML = '<p class="text-gray-400 text-center col-span-3">No development posts found.</p>';
-                return;
-            }
-
-            postsContainer.innerHTML = posts.map(post => `
-                <div class="dev-card bg-gray-900 rounded-lg overflow-hidden shadow-lg">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-3">
-                            <h3 class="text-xl font-bold">${post.title || 'Untitled Project'}</h3>
-                            <span class="bg-gray-700 text-primary-red text-xs px-2 py-1 rounded-full">Development</span>
+                    container.innerHTML += `
+                    <div class="dev-card bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                        <div class="bg-primary-red p-4 text-center">
+                            <div class="text-xl font-bold">${month} ${day}</div>
+                            <div class="text-sm">${year}</div>
                         </div>
-                        
-                        <div class="mb-4">
-                            <p class="text-gray-300 mb-2"><span class="font-medium">Repository:</span> 
-                                <a href="${post.repo_link || '#'}" target="_blank" class="text-primary-red hover:underline break-all">
-                                    ${post.repo_link || 'Not specified'}
-                                </a>
-                            </p>
-                            <p class="text-gray-300 mb-2"><span class="font-medium">File Path:</span> ${post.file_path || 'Not specified'}</p>
-                            <p class="text-gray-300"><span class="font-medium">Owner:</span> ${post.owner_github_username || 'Anonymous'}</p>
-                        </div>
-                        
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            ${post.contributors ? JSON.parse(post.contributors).map(contributor => `
-                                <span class="bg-gray-800 text-gray-300 text-xs px-2 py-1 rounded-full">${contributor}</span>
-                            `).join('') : ''}
-                        </div>
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-500">Posted: ${post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Unknown date'}</span>
-                            <a href="${post.repo_link || '#'}" target="_blank" class="text-primary-red hover:underline text-sm font-medium">
-                                View on GitHub
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">${post.title}</h3>
+                            <div class="flex flex-wrap gap-2 mb-4">${contributors}</div>
+                            <a href="${post.repo_link}" target="_blank" class="text-primary-red hover:underline font-medium">
+                                View GitHub →
                             </a>
                         </div>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        // Render pagination controls
-        function renderPagination() {
-            if (totalPages <= 1) {
-                paginationContainer.innerHTML = '';
-                return;
-            }
-
-            let paginationHTML = '';
-
-            // Previous button
-            paginationHTML += `
-                <button onclick="changePage(${currentPage - 1})" 
-                    class="px-3 py-2 rounded-l-md bg-gray-800 text-off-white hover:bg-gray-700"
-                    ${currentPage === 1 ? 'disabled' : ''}>
-                    Previous
-                </button>
-            `;
-
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                paginationHTML += `
-                    <button onclick="changePage(${i})" 
-                        class="px-3 py-2 ${currentPage === i ? 'bg-primary-red text-off-white' : 'bg-gray-800 text-off-white hover:bg-gray-700'}">
-                        ${i}
-                    </button>
                 `;
+                });
+
+                document.getElementById('prev-btn').disabled = data.current_page === 1;
+                document.getElementById('next-btn').disabled = data.current_page === data.total_page;
+                document.getElementById('page-info').textContent = `Page ${data.current_page} of ${data.total_page}`;
+            } catch (error) {
+                console.error("Error loading posts", error);
             }
-
-            // Next button
-            paginationHTML += `
-                <button onclick="changePage(${currentPage + 1})" 
-                    class="px-3 py-2 rounded-r-md bg-gray-800 text-off-white hover:bg-gray-700"
-                    ${currentPage === totalPages ? 'disabled' : ''}>
-                    Next
-                </button>
-            `;
-
-            paginationContainer.innerHTML = paginationHTML;
         }
 
-        // Change page
-        function changePage(page) {
-            if (page < 1 || page > totalPages || page === currentPage) return;
-
-            currentPage = page;
-            fetchDevPosts(currentPage);
-        }
-
-        // Initial load
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchDevPosts(currentPage);
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadPosts(currentPage);
+            }
         });
 
-        // Make changePage function available globally
-        window.changePage = changePage;
+        document.getElementById('next-btn').addEventListener('click', () => {
+            currentPage++;
+            loadPosts(currentPage);
+        });
+
+        loadPosts(currentPage);
     </script>
 </body>
 

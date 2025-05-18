@@ -31,23 +31,24 @@ export async function createDesignPost(req: Request, res: Response) {
 
 export async function getAllPosts(req: Request, res: Response) {
     try {
-        const query = 'SELECT * FROM design_posts WHERE is_deleted = false ORDER BY created_at DESC';
+        const query = 'SELECT * FROM design_posts WHERE is_deleted = false ORDER BY created_at DESC LIMIT 3';
         const { rows } = await pool.query(query);
 
         if (rows.length === 0) {
             return successResponse(res, [], "No posts found");
         }
 
-        successResponse(res, rows, "Posts retrieved successfully");
+        successResponse(res, rows, "Latest 3 posts retrieved successfully");
     } catch (error) {
         errorResponse(error as Error, 500, "Failed to retrieve posts", res);
     }
 }
 
+
 export async function pagination(req: Request, res: Response) {
     try {
         const page: number = parseInt(req.query.page as string) || 1; // Get page from query
-        const limit: number = parseInt(req.query.limit as string) || 3; // Get limit from query
+        const limit: number = 3;
         const skip = (page - 1) * limit;
 
         const total_posts_qry = 'SELECT COUNT(*) FROM design_posts WHERE is_deleted = false';
@@ -55,7 +56,7 @@ export async function pagination(req: Request, res: Response) {
         const total_posts: number = parseInt(total_result.rows[0].count);
         const total_page: number = Math.ceil(total_posts / limit);
 
-        const query = 'SELECT * FROM design_posts WHERE is_deleted = false ORDER BY created_at LIMIT $1 OFFSET $2';
+        const query = 'SELECT * FROM design_posts WHERE is_deleted = false ORDER BY created_at DESC LIMIT $1 OFFSET $2';
         const { rows } = await pool.query(query, [limit, skip]);
 
         if (rows.length === 0) {

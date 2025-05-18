@@ -132,20 +132,26 @@ export async function destroyDevPost(req: Request, res: Response) {
 }
 
 export async function paginationDevPosts(req: Request, res: Response) {
-
     try {
-        // Get page and limit from query parameters (from frontend URL)
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 3;
+        const total_posts_qry = 'SELECT COUNT(*) FROM dev_posts WHERE is_deleted = false';
+
+        // Get the page number from the request query (e.g., /posts?page=2)
+        const page: number = parseInt(req.query.page as string) || 1;
+        console.log("page:", page);
+
+        const limit: number = 3;
         const skip = (page - 1) * limit;
 
-        const total_posts_qry = 'SELECT COUNT(*) FROM dev_posts WHERE is_deleted = false';
         const total_result = await pool.query(total_posts_qry);
         const total_posts: number = parseInt(total_result.rows[0].count);
         const total_page: number = Math.ceil(total_posts / limit);
 
-        const query = 'SELECT * FROM dev_posts WHERE is_deleted = false ORDER BY created_at DESC LIMIT $1 OFFSET $2';
+        const query = 'SELECT * FROM dev_posts WHERE is_deleted = false ORDER BY created_at LIMIT $1 OFFSET $2';
         const { rows } = await pool.query(query, [limit, skip]);
+
+        if (rows.length === 0) {
+            return successResponse(res, [], "No posts found");
+        }
 
         const response = {
             current_page: page,
@@ -154,8 +160,7 @@ export async function paginationDevPosts(req: Request, res: Response) {
             posts: rows
         };
 
-        return successResponse(res, response, "Fetched posts successfully");
-
+        successResponse(res, response, "Posts retrieved successfully");
     } catch (error) {
         errorResponse(error as Error, 500, "Failed to retrieve posts", res);
     }
@@ -163,14 +168,14 @@ export async function paginationDevPosts(req: Request, res: Response) {
 
 export async function getAllPosts(req: Request, res: Response) {
     try {
-        const query = 'SELECT * FROM dev_posts WHERE is_deleted = false ORDER BY created_at';
+        const query = 'SELECT * FROM dev_posts WHERE is_deleted = false ORDER BY created_at DESC LIMIT 3';
         const { rows } = await pool.query(query);
 
         if (rows.length === 0) {
             return successResponse(res, [], "No posts found");
         }
 
-        successResponse(res, rows, "Posts retrieved successfully");
+        successResponse(res, rows, "Latest 3 posts retrieved successfully");
     } catch (error) {
         errorResponse(error as Error, 500, "Failed to retrieve posts", res);
     }
