@@ -113,13 +113,7 @@ app.get("/detail-design-posts", (req: Request, res: Response) => {
         error: req.query.errorResponse,
     });
 });
-app.get("/all-develop-posts", (req: Request, res: Response) => {
-    res.render('all-develop-post', {
-        title: 'Detail develop Posts Page',
 
-        error: req.query.errorResponse,
-    });
-});
 
 const navPath = path.join(__dirname, "views", "navigation.hbs");
 const navContent = fs.readFileSync(navPath, "utf8");
