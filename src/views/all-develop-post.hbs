@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Development Posts | Strategy First IT Club</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-red': '#E63946',
+                        'dark-red': '#C1121F',
+                        'light-red': '#FF686B',
+                        'rich-black': '#0A0908',
+                        'off-white': '#F8F9FA'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .hero-pattern {
+            background-color: #0A0908;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E63946' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .dev-card {
+            transition: all 0.3s ease;
+        }
+
+        .dev-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(230, 57, 70, 0.2);
+        }
+    </style>
+</head>
+
+<body class="font-sans bg-rich-black text-off-white">
+    <!-- Navigation -->
+    {{> navigation}}
+
+    <!-- Hero Section -->
+    <section class="hero-pattern pt-20 pb-16 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Development Posts</h1>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto text-gray-300">
+                Explore code repositories, projects, and technical insights from our developer community.
+            </p>
+        </div>
+    </section>
+    <!-- Card container -->
+    <section id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 mb-10 mt-12">
+        <!-- Cards will be inserted here -->
+    </section>
+
+    <!-- Pagination buttons with page number -->
+    <div class="flex justify-center items-center gap-4 pb-10">
+        <button id="prev-btn" class="bg-gray-800 px-4 py-2 rounded hover:bg-red-700">Prev</button>
+        <span id="page-info" class="text-gray-400">Page 1</span>
+        <button id="next-btn" class="bg-gray-800 px-4 py-2 rounded hover:bg-red-700">Next</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-rich-black text-off-white py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <div class="text-xl font-bold">Strategy First IT Club</div>
+                    </div>
+                    <p class="text-gray-400">Empowering the next generation of tech leaders through hands-on learning
+                        and innovation.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-primary-red">QUICK LINKS</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-primary-red">About Us</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Events Calendar</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Projects</a></li>
+                        <li><a href="#" class="hover:text-primary-red">Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-primary-red">CONNECT</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">FB</a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">GH</a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-red">IG</a>
+                    </div>
+                    <p class="text-gray-400">info@strategyfirst.edu.mm</p>
+                    <p class="text-gray-400">09-250717166, 09-250717168</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Strategy First IT Club. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        let currentPage = 1;
+
+        async function loadPosts(page) {
+            try {
+                const res = await fetch(`/api/dev-posts/pagination?page=${page}`);
+                const response = await res.json();
+
+                const data = response.data;
+                const container = document.getElementById('card-container');
+                container.innerHTML = ''; // Clear old posts
+
+                data.posts.forEach(post => {
+                    const date = new Date(post.created_at);
+                    const month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+                    const day = date.getDate();
+                    const year = date.getFullYear();
+
+                    const contributors = Array.isArray(post.contributors)
+                        ? post.contributors.map(name =>
+                            `<span class="bg-gray-700 text-white px-3 py-1 rounded-full text-xs">${name}</span>`
+                        ).join(' ')
+                        : '';
+
+                    container.innerHTML += `
+                    <div class="dev-card bg-gray-900 rounded-lg overflow-hidden shadow-lg">
+                        <div class="bg-primary-red p-4 text-center">
+                            <div class="text-xl font-bold">${month} ${day}</div>
+                            <div class="text-sm">${year}</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">${post.title}</h3>
+                            <div class="flex flex-wrap gap-2 mb-4">${contributors}</div>
+                            <a href="${post.repo_link}" target="_blank" class="text-primary-red hover:underline font-medium">
+                                View GitHub → ${post.repo_link}
+                            </a>
+                        </div>
+                    </div>
+                `;
+                });
+
+                document.getElementById('prev-btn').disabled = data.current_page === 1;
+                document.getElementById('next-btn').disabled = data.current_page === data.total_page;
+                document.getElementById('page-info').textContent = `Page ${data.current_page} of ${data.total_page}`;
+            } catch (error) {
+                console.error("Error loading posts", error);
+            }
+        }
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadPosts(currentPage);
+            }
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            currentPage++;
+            loadPosts(currentPage);
+        });
+
+        loadPosts(currentPage);
+    </script>
+</body>
+
+</html>

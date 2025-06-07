@@ -8,6 +8,8 @@ import designPostRoutes from "./routes/designPostRoutes";
 import devPostRoutes from "./routes/devPostRoutes";
 import path from 'path';
 import AuthRoute from "./routes/AuthRoute";
+import fs from 'fs';
+import Handlebars from 'handlebars';
 import GitHubApiRequestHelper from "./ApiRequest/GitHubApiRequest";
 require("dotenv/config");
 
@@ -21,14 +23,22 @@ app.use(express.urlencoded({ extended: true })); // to parse url encoded data
 app.engine(".hbs", engine(
     {
         extname: ".hbs",
-        defaultLayout: false,
-
+        defaultLayout: "main-layout",
+        layoutsDir: path.join(__dirname, "views"),
     }
 ));
 app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static(path.join(__dirname, 'views', "public"))); // to serve static files
+
+const navPath = path.join(__dirname, "views", "navigation.hbs");
+const navContent = fs.readFileSync(navPath, "utf8");
+Handlebars.registerPartial("navigation", navContent);
+
+const footerPath = path.join(__dirname, "views", "footer.hbs");
+const footerContent = fs.readFileSync(footerPath, "utf8");
+Handlebars.registerPartial("footer", footerContent);
 
 app.use(
     cors({
@@ -55,12 +65,14 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/login", (req: Request, res: Response) => {
     res.render('login', {
         title: 'Login Page',
+        layout: 'auth-layout',
         error: req.query.errorResponse,
     });
 });
 app.get("/register", (req: Request, res: Response) => {
     res.render('register', {
         title: 'Register Page',
+        layout: 'auth-layout',
         error: req.query.errorResponse,
     });
 });
@@ -88,6 +100,30 @@ app.get("/design-posts", (req: Request, res: Response) => {
         error: req.query.errorResponse,
     });
 });
+
+
+app.get("/all-design-posts", (req: Request, res: Response) => {
+    res.render('all-design-post', {
+        title: 'Design Posts Page',
+
+        error: req.query.errorResponse,
+    });
+});
+app.get("/all-develop-posts", (req: Request, res: Response) => {
+    res.render('all-develop-post', {
+        title: 'Develop Posts Page',
+
+        error: req.query.errorResponse,
+    });
+});
+app.get("/detail-design-posts", (req: Request, res: Response) => {
+    res.render('detail-design-post', {
+        title: 'Detail design Posts Page',
+
+        error: req.query.errorResponse,
+    });
+});
+
 
 
 app.use("/api/users", userRoutes);
