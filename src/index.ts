@@ -23,14 +23,22 @@ app.use(express.urlencoded({ extended: true })); // to parse url encoded data
 app.engine(".hbs", engine(
     {
         extname: ".hbs",
-        defaultLayout: false,
-
+        defaultLayout: "main-layout",
+        layoutsDir: path.join(__dirname, "views"),
     }
 ));
 app.set("view engine", ".hbs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static(path.join(__dirname, 'views', "public"))); // to serve static files
+
+const navPath = path.join(__dirname, "views", "navigation.hbs");
+const navContent = fs.readFileSync(navPath, "utf8");
+Handlebars.registerPartial("navigation", navContent);
+
+const footerPath = path.join(__dirname, "views", "footer.hbs");
+const footerContent = fs.readFileSync(footerPath, "utf8");
+Handlebars.registerPartial("footer", footerContent);
 
 app.use(
     cors({
@@ -57,12 +65,14 @@ app.get("/", (req: Request, res: Response) => {
 app.get("/login", (req: Request, res: Response) => {
     res.render('login', {
         title: 'Login Page',
+        layout: 'auth-layout',
         error: req.query.errorResponse,
     });
 });
 app.get("/register", (req: Request, res: Response) => {
     res.render('register', {
         title: 'Register Page',
+        layout: 'auth-layout',
         error: req.query.errorResponse,
     });
 });
@@ -115,9 +125,6 @@ app.get("/detail-design-posts", (req: Request, res: Response) => {
 });
 
 
-const navPath = path.join(__dirname, "views", "navigation.hbs");
-const navContent = fs.readFileSync(navPath, "utf8");
-Handlebars.registerPartial("navigation", navContent);
 
 app.use("/api/users", userRoutes);
 app.use("/api/design-Posts", designPostRoutes);
